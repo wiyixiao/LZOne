@@ -2,8 +2,9 @@
 <resources>
 
 	<string name="NAL_app_name">LZOne</string>
+	<string name="NAL_app_about">About</string>
 	<string name="NAL_menu_tcp">TCP</string>
 	<string name="NAL_menu_udp">UDP</string>
 	<string name="NAL_menu_help">Help</string>
-
+	<string name="NAL_device_cfg">Device config</string>
 </resources>

@@ -12,7 +12,7 @@ public class MyApplication extends ApplaicationBase {
     /**
      * @Desc: 当前页面ID
      */
-    public int intentType = Vars.IntentType.IDVG;
+    public int intentType = Vars.IntentType.CONTROL;
 
     /**
      * @Desc: 数据库名称&版本

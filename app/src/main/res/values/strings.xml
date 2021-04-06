@@ -1,10 +1,13 @@
 <resources>
     <string name="NAL_app_name">LZOne</string>
+    <string name="NAL_app_about">关于</string>
 
 <!--ActionBar-->
     <string name="NAL_menu_tcp">TCP</string>
     <string name="NAL_menu_udp">UDP</string>
     <string name="NAL_menu_help">帮助</string>
+
+    <string name="NAL_device_cfg">设备配置</string>
 
 
 

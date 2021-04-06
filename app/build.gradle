@@ -122,6 +122,9 @@ android {
         println(ext.sourceCompatibility)
         targetCompatibility ext.targetCompatibility
     }
+    buildFeatures {
+        //viewBinding = true
+    }
 }
 
 dependencies {

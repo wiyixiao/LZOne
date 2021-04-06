@@ -8,10 +8,8 @@ package com.wiyixiao.lzone.data;
 public class Vars {
 
     public interface IntentType{
-        int IDVG = 0;
-        int IDVD = 1;
-        int IT = 2;
-        int ABOUT = 3;
+        int CONTROL = 0;
+        int ABOUT = 1;
     }
 
 }

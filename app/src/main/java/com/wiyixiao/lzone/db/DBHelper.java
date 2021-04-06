@@ -19,7 +19,19 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.e("DBHelper", "");
+        Log.e("DBHelper", "DataBase create");
+
+        //创建连接设备数据表
+        db.execSQL("CREATE TABLE IF NOT EXISTS device_table(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "ip VARCHAR, port INTEGER, type INTEGER, auto INTEGER)");
+
+        //创建设备对应的按键数据表
+        db.execSQL("CREATE TABLE IF NOT EXISTS key_table(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "ip VARCHAR, title TEXT, type INTEGER, time INTEGER)");
+
+        //创建系统配置数据表
+        db.execSQL("CREATE TABLE IF NOT EXISTS sys_table(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "ip VARCHAR, key_num INTEGER)");
     }
 
     @Override
