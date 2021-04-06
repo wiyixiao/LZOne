@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/item_tcp"
+        android:title="@string/NAL_menu_tcp" />
+    <item
+        android:id="@+id/item_udp"
+        android:title="@string/NAL_menu_udp" />
+
+    <item
+        android:id="@+id/item_help"
+        android:title="@string/NAL_menu_help" />
+</menu>

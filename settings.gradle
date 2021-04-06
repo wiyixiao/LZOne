@@ -1,0 +1,2 @@
+include ':app','ZipLib','Share2Lib'
+rootProject.name = "lzone"

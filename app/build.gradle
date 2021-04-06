@@ -1,0 +1,160 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+apply from: 'version.gradle'
+
+def getDate(){
+    return new Date().format("yyyyMMddHHmmss")
+}
+
+def keystoreFilepath = ''
+def keystorePSW = ''
+def keystoreAlias = ''
+def keystoreAliasPSW = ''
+// default keystore file, PLZ config file path in local.properties
+def keyfile = file('s.keystore.temp')
+
+Properties properties = new Properties()
+// local.properties file in the root director
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+keystoreFilepath = properties.getProperty("keystore.path")
+
+if (keystoreFilepath) {
+    keystorePSW = properties.getProperty("keystore.password")
+    keystoreAlias = properties.getProperty("keystore.alias")
+    keystoreAliasPSW = properties.getProperty("keystore.alias_password")
+    keyfile = file(keystoreFilepath)
+
+    /***********************输出key信息***********************/
+    println keystoreFilepath
+    println "keystoreAlias: " + keystoreAlias
+    println "keystorePSW: " + keystorePSW
+    println "keystoreAliasPSW: " + keystoreAliasPSW
+}
+
+android {
+
+    def ext = rootProject.ext
+
+    signingConfigs {
+        release {
+            storeFile keyfile
+            storePassword keystorePSW
+            keyPassword keystoreAliasPSW
+            keyAlias keystoreAlias
+        }
+    }
+    compileSdkVersion ext.android.compileSdk
+
+    buildToolsVersion ext.android.buildTools
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+    defaultConfig {
+        applicationId "com.wiyixiao.lzone"
+        targetSdkVersion ext.android.targetSdk
+        minSdkVersion ext.android.minSdk
+        versionCode project.ext.versionCode //版本号
+        versionName ext.android.versionName //版本名
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            buildConfigField ("boolean", "isDebug", "true")
+            signingConfig signingConfigs.debug
+            applicationIdSuffix '.debug'
+            //resValue "string", "app_name", "@string/NAL_app_name_debug"
+            resValue "string", "app_name", ext.app.debugName
+//            versionNameSuffix ext.app.debugVer//++
+            versionNameSuffix project.ext.versionName
+        }
+        release {
+            minifyEnabled true //开启代码混淆
+            shrinkResources  true  //移除无用的resource文件
+            zipAlignEnabled true
+            buildConfigField ("boolean", "isDebug", "false")
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".release"
+//            resValue "string", "app_name", "@string/NAL_app_name_release"
+            resValue "string", "app_name", ext.app.releaseName
+//            versionNameSuffix ext.app.releaseVer //++
+            versionNameSuffix project.ext.versionName
+        }
+    }
+    applicationVariants.all{ variant->
+        variant.outputs.all { output->
+
+            println '----------------------APP NAME----------------------'
+
+            if(variant.buildType.name.equals('release')){
+                println ext.app.releaseName
+
+                //输出版本信息
+//                println defaultConfig.versionCode
+//                println buildTypes.release.versionNameSuffix
+
+                //outputFileName = ext.app.releaseName + '.apk'
+                outputFileName = ext.app.releaseName + "-V" + buildTypes.release.versionNameSuffix + "-" + buildType.name + "-" + getDate() + '.apk'
+            }
+            if(variant.buildType.name.equals('debug')){
+                println ext.app.debugName
+
+//                //输出版本信息
+//                println defaultConfig.versionCode
+//                println buildTypes.debug.versionNameSuffix
+
+                outputFileName = ext.app.debugName + "-V" + buildTypes.debug.versionNameSuffix + "-" + buildType.name + "-" + getDate() + ".apk"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility ext.sourceCompatibility
+        println(ext.sourceCompatibility)
+        targetCompatibility ext.targetCompatibility
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation files('libs\\gson-2.8.6.jar')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android:flexbox:0.3.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-alpha1'
+    implementation 'com.zyao89:zloading:1.0.11'
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation(name: 'xcrash_lib-release', ext: 'aar')
+    implementation 'org.greenrobot:eventbus:3.2.0'
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.3'
+
+    implementation project(':Share2Lib')
+    implementation project(':ZipLib')
+}
+repositories {
+    mavenCentral()
+
+    flatDir {
+        dirs 'libs'
+    }
+}

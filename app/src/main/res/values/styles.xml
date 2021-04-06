@@ -1,0 +1,26 @@
+<resources>
+
+    <style name="OverflowStyle">
+        <!--parent="android:style/Widget.Holo.Light.ActionButton.Overflow"-->
+        <item name="android:src">@drawable/ic_action_add</item>
+        <item name="android:padding">@dimen/dp_10</item>
+    </style>
+
+    <style name="techstar.MenuStyle" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!--修改菜单栏右边三个白点图标-->
+        <item name="android:actionOverflowButtonStyle">@style/OverflowStyle</item>
+        <!--ToolBar右边弹出菜单背景色 不遮拦Toolbar-->
+        <item name="actionOverflowMenuStyle">@style/techstar.MenuStyle</item>
+    </style>
+
+</resources>

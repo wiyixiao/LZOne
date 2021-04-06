@@ -1,0 +1,47 @@
+
+
+device_table
+
+连接表(连接删除后，应删除其对应的全部键位)：
+	
+	id索引   ip地址	 port端口	 type连接类型(tcp:0 , udp:1)  auto定时发送(yes: true, no: false) 
+
+sql: 
+	
+	{
+
+		CREATE TABLE IF NOT EXISTS device_table(id INTEGER PRIMARY KEY AUTOINCREMENT, ip VARCHAR, port INTEGER, type INTEGER, auto INTEGER)
+	}
+
+key_table
+
+键位表(多个键位可能对应同一个连接):
+	
+	id索引  ip对应连接地址(根据地址获取port & type)  title键位名称 txt键位内容  type发送类型(str: 0, hex: 1) time定时时间 
+
+sql: 
+	
+	{
+
+		CREATE TABLE IF NOT EXISTS key_table(id INTEGER PRIMARY KEY AUTOINCREMENT, ip VARCHAR, title TEXT, type INTEGER, time INTEGER)
+	}
+
+sys_table
+
+系统配置表，软件启动初始化：
+	
+	id索引  ip当前连接地址(记录最后连接的地址) key_num初始化键位数量(default: 9)  
+
+sql: 
+
+	{
+
+		CREATE TABLE IF NOT EXISTS sys_table(id INTEGER PRIMARY KEY AUTOINCREMENT, ip VARCHAR, key_num INTEGER)
+	}
+
+
+
+
+
+
+

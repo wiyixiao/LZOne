@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: :xcrash_lib-release:@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/8f7e4563fb3846b5d3d4f122337fee76/jetified-xcrash_lib-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/8f7e4563fb3846b5d3d4f122337fee76/jetified-xcrash_lib-release/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

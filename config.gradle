@@ -1,0 +1,42 @@
+//config gradle
+
+ext {
+    android = [
+        compileSdk : 29,// 用于编译的SDK版本
+        buildTools : "29.0.3",// 用于Gradle编译项目的工具版本
+        minSdk     : 21,// 最低支持Android版本
+        targetSdk  : 29,// 目标版本
+        versionCode: 1,//版本号
+        versionName: "",//版本名
+        kotlin_version:'1.4.0'
+    ]
+
+    app = [
+        debugName : 'LZOne Debug', //app debug 名称
+//        debugVer : '1.0.0.0', //debug 版本名
+        releaseName : 'LZOne', //app release 名称
+//        releaseVer : '1.0.0' //release 版本名
+    ]
+
+    // Java版本设置
+    javaVersion = 8
+    javaMaxHeapSize = '4G'
+    sourceCompatibility = this.&getJavaVersion()
+    targetCompatibility = this.&getJavaVersion()
+
+//    //'CI' environment variables is set in CI(eg. Jenkins) configuration page
+//    ci = 'true'.equals(System.getenv('CI'))
+}
+
+def getJavaVersion(){
+    switch (rootProject.ext.javaVersion){
+        case "6":
+            return JavaVersion.VERSION_1_6
+        case "7":
+            return JavaVersion.VERSION_1_7
+        case "8":
+            return JavaVersion.VERSION_1_8
+    }
+}
+
+//adb install -r
