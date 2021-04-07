@@ -2,12 +2,18 @@
     <string name="NAL_app_name">LZOne</string>
     <string name="NAL_app_about">关于</string>
 
+    <string name="NAL_btn_ok">确定</string>
+    <string name="NAL_btn_save">保存</string>
+    <string name="NAL_btn_cancel">取消</string>
+    <string name="NAL_btn_del">删除</string>
+
 <!--ActionBar-->
-    <string name="NAL_menu_tcp">TCP</string>
-    <string name="NAL_menu_udp">UDP</string>
+    <string name="NAL_menu_add">添加</string>
     <string name="NAL_menu_help">帮助</string>
 
     <string name="NAL_device_cfg">设备配置</string>
+    <string name="NAL_device_tcp">TCP</string>
+    <string name="NAL_device_udp">UDP</string>
 
 
 

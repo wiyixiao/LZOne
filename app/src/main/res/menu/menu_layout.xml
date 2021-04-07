@@ -2,11 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/item_tcp"
-        android:title="@string/NAL_menu_tcp" />
-    <item
-        android:id="@+id/item_udp"
-        android:title="@string/NAL_menu_udp" />
+        android:id="@+id/item_add"
+        android:title="@string/NAL_menu_add" />
 
     <item
         android:id="@+id/item_help"

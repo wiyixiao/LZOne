@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/dp_120"
-    android:layout_height="@dimen/dp_120"
+    android:layout_height="@dimen/dp_100"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center_vertical"
@@ -22,18 +22,46 @@
             android:src="@drawable/logo"
             android:layout_gravity="center"/>
 
-        <TextView
-            android:id="@+id/textView1"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/dp_2"
-            android:paddingBottom="@dimen/dp_2"
-            android:textSize="@dimen/sp_10"
-            android:textColor="@color/colorPrimary"
-            android:letterSpacing="0.1"
-            android:text="8080\n255.255.255.255\nTCP"
-            android:gravity="center"
-            tools:targetApi="lollipop" />
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/port_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/colorPrimary"
+                android:letterSpacing="0.1"
+                android:text="80"
+                android:gravity="center"
+                tools:targetApi="lollipop" />
+
+            <TextView
+                android:id="@+id/ip_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/colorPrimary"
+                android:letterSpacing="0.1"
+                android:text="255.255.255.255"
+                android:gravity="center"
+                tools:targetApi="lollipop" />
+
+            <TextView
+                android:id="@+id/type_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/colorPrimary"
+                android:letterSpacing="0.1"
+                android:text="TCP"
+                android:gravity="center"
+                tools:targetApi="lollipop" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

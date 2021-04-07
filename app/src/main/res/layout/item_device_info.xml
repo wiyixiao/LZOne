@@ -18,20 +18,28 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <CheckBox
-                android:id="@+id/checkbox_tcp"
+            <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/NAL_menu_tcp"
-                android:textSize="@dimen/sp_12"
-                android:checked="true" />
+                android:orientation="horizontal">
 
-            <CheckBox
-                android:id="@+id/checkbox_udp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/NAL_menu_udp"
-                android:textSize="@dimen/sp_12" />
+                <RadioButton
+                    android:id="@+id/rbtn_tcp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/NAL_device_tcp"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_marginEnd="@dimen/dp_5"
+                    android:checked="true" />
+
+                <RadioButton
+                    android:id="@+id/rbtn_udp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/NAL_device_udp"
+                    android:textSize="@dimen/sp_12" />
+
+            </RadioGroup>
 
         </LinearLayout>
 
@@ -39,6 +47,7 @@
             android:id="@+id/checkbox_auto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_5"
             android:text="Auto"
             android:textSize="@dimen/sp_12"/>
 
@@ -64,8 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/dp_150"
-            android:text=""
-            android:hint="0.0.0.0"
+            android:text="192.168.4.1"
             android:textSize="@dimen/sp_14"
             android:gravity="center"/>
 
@@ -91,8 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/dp_150"
-            android:text=""
-            android:hint="80"
+            android:text="80"
             android:textSize="@dimen/sp_14"
             android:gravity="center"/>
 
@@ -106,24 +113,23 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/btn_change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="修改"
-            android:textColor="@color/colorWhite"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:textSize="@dimen/sp_14"
-            android:theme="@style/BlueButtonStyle"
-            android:enabled="false" />
-
-        <Button
             android:id="@+id/btn_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="保存"
+            android:text="@string/NAL_btn_save"
             android:textColor="@color/colorWhite"
+            android:layout_marginEnd="@dimen/dp_20"
             android:textSize="@dimen/sp_14"
             android:theme="@style/BlueButtonStyle"/>
+
+        <Button
+            android:id="@+id/btn_del"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/NAL_btn_del"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/sp_14"
+            android:theme="@style/BlueButtonStyle" />
 
     </LinearLayout>
 
