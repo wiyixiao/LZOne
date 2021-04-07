@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="@dimen/dp_50"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
             android:src="@drawable/logo"
             android:layout_gravity="center"/>
 
@@ -28,7 +28,7 @@
             android:layout_height="match_parent"
             android:paddingTop="@dimen/dp_2"
             android:paddingBottom="@dimen/dp_2"
-            android:textSize="@dimen/sp_12"
+            android:textSize="@dimen/sp_10"
             android:textColor="@color/colorPrimary"
             android:letterSpacing="0.1"
             android:text="8080\n255.255.255.255\nTCP"

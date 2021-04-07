@@ -8,14 +8,23 @@
     tools:context=".MainActivity"
     android:gravity="center">
 
-    <GridView
-        android:id="@+id/grid_layout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/dp_5"
-        android:horizontalSpacing="@dimen/dp_10"
-        android:numColumns="4"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="@dimen/dp_10" />
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
+
+        <GridView
+            android:id="@+id/grid_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/dp_5"
+            android:paddingBottom="@dimen/dp_5"
+            android:horizontalSpacing="@dimen/dp_2"
+            android:numColumns="4"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="@dimen/dp_2" />
+
+    </LinearLayout>
 
 </LinearLayout>
