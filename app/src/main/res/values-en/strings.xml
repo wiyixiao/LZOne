@@ -3,13 +3,19 @@
 
 	<string name="NAL_app_name">LZOne</string>
 	<string name="NAL_app_about">About</string>
-	<string name="NAL_menu_add">Add</string>
-	<string name="NAL_menu_help">Help</string>
-	<string name="NAL_device_cfg">Device config</string>
-	<string name="NAL_device_tcp">TCP</string>
-	<string name="NAL_device_udp">UDP</string>
 	<string name="NAL_btn_ok">Ok</string>
 	<string name="NAL_btn_save">Save</string>
 	<string name="NAL_btn_cancel">Cancel</string>
 	<string name="NAL_btn_del">Delete</string>
+	<string name="NAL_menu_add">Add</string>
+	<string name="NAL_menu_clear">Clear</string>
+	<string name="NAL_menu_help">Help</string>
+	<string name="NAL_device_added">Device has been added</string>
+	<string name="NAL_device_invalid">Invalid operation</string>
+	<string name="NAL_device_zero">Number of devices: 0</string>
+	<string name="NAL_input_empty">Input can not be empty</string>
+	<string name="NAL_device_cfg">Device config</string>
+	<string name="NAL_device_tcp">TCP</string>
+	<string name="NAL_device_udp">UDP</string>
+
 </resources>

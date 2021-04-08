@@ -95,7 +95,7 @@ public class LogoActivity extends AppCompatActivity {
     }
 
     private void toMainActivity(){
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, DeviceActivity.class);
         startActivity(intent);
         finish();
     }

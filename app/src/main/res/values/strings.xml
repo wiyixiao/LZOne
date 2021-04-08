@@ -7,14 +7,20 @@
     <string name="NAL_btn_cancel">取消</string>
     <string name="NAL_btn_del">删除</string>
 
-<!--ActionBar-->
+    <!--ActionBar-->
     <string name="NAL_menu_add">添加</string>
+    <string name="NAL_menu_clear">清除</string>
     <string name="NAL_menu_help">帮助</string>
+
+    <string name="NAL_device_added">设备已添加</string>
+    <string name="NAL_device_invalid">无效操作</string>
+    <string name="NAL_device_zero">设备数量: 0</string>
+    <string name="NAL_input_empty">输入不能为空</string>
+
 
     <string name="NAL_device_cfg">设备配置</string>
     <string name="NAL_device_tcp">TCP</string>
     <string name="NAL_device_udp">UDP</string>
-
 
 
 </resources>

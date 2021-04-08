@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/item_add"
+        android:title="@string/NAL_menu_add" />
+
+    <item
+        android:id="@+id/item_clear"
+        android:title="@string/NAL_menu_clear" />
+
+    <item
+        android:id="@+id/item_help"
+        android:title="@string/NAL_menu_help" />
+</menu>
