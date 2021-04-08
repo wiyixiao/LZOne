@@ -29,31 +29,10 @@
         android:gravity="center"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:minHeight="@dimen/dp_40"
         android:background="@drawable/border_lr">
 
-        <RadioGroup
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <RadioButton
-                android:id="@+id/str_rbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Str"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:textSize="@dimen/sp_12"
-                android:checked="true"/>
-
-            <RadioButton
-                android:id="@+id/hex_rbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hex"
-                android:textSize="@dimen/sp_12"/>
-
-        </RadioGroup>
+        <include layout="@layout/inc_send_type_layout"/>
 
         <RelativeLayout
             android:layout_width="0dp"

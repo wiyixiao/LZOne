@@ -11,6 +11,8 @@
     <string name="NAL_menu_add">添加</string>
     <string name="NAL_menu_clear">清除</string>
     <string name="NAL_menu_help">帮助</string>
+    <string name="NAL_menu_key">增加按键</string>
+    <string name="NAL_menu_set">设置参数</string>
 
     <string name="NAL_device_added">设备已添加</string>
     <string name="NAL_device_invalid">无效操作</string>
@@ -19,6 +21,7 @@
 
 
     <string name="NAL_device_cfg">设备配置</string>
+    <string name="NAL_key_cfg">按键配置</string>
     <string name="NAL_device_tcp">TCP</string>
     <string name="NAL_device_udp">UDP</string>
 

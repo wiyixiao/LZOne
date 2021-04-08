@@ -4,17 +4,24 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
+import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.utils.DisplayUtils;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -59,12 +66,30 @@ public class ControlActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home)
-        {
-            finish();
-            return true;
+        int id = item.getItemId();
+        switch (id){
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.item_key:
+                //增加按钮弹窗
+                showKeyEditDialog(null);
+                break;
+            case R.id.item_set:
+                //显示设置弹窗
+
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //TODO 状态栏按钮
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_control_layout, menu);
+        return true;
     }
 
     private void printDeviceInfo(){
@@ -75,5 +100,19 @@ public class ControlActivity extends AppCompatActivity {
         builder.append("device auto: ").append(bean.isAuto()).append("\n");
 
         System.out.println(builder.toString());
+    }
+
+    private void showKeyEditDialog(KeyInfoBean bean){
+        //图层模板生成器句柄
+        LayoutInflater factory = LayoutInflater.from(this);
+        //用sname.xml模板生成视图模板
+        final View dialogView = factory.inflate(R.layout.item_key_info, null);
+
+        android.app.AlertDialog saveDialog =  new android.app.AlertDialog.Builder(this)
+                .setTitle(getResources().getString(R.string.NAL_key_cfg))
+                //设置视图模板
+                .setView(dialogView)
+                //显示对话框
+                .show();
     }
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:padding="@dimen/dp_10">
+
+        <TableRow
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <include layout="@layout/inc_send_type_layout"/>
+
+        </TableRow>
+
+        <TableRow
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="match_parent"
+                android:text="按键名: "
+                android:gravity="center_vertical|end"
+                android:textSize="@dimen/sp_14"/>
+
+            <EditText
+                android:id="@+id/key_name_edit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="@dimen/sp_14"
+                android:inputType="text"
+                android:lines="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="match_parent"
+                android:text="短按发送: "
+                android:gravity="center_vertical|end"
+                android:textSize="@dimen/sp_14"/>
+
+            <EditText
+                android:id="@+id/key_click_txt_edit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="@dimen/sp_14"
+                android:inputType="text"
+                android:lines="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="match_parent"
+                android:text="长按发送: "
+                android:gravity="center_vertical|end"
+                android:textSize="@dimen/sp_14"/>
+
+            <EditText
+                android:id="@+id/key_lclick_txt_edit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="@dimen/sp_14"
+                android:inputType="text"
+                android:lines="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="match_parent"
+                android:text="释放发送: "
+                android:gravity="center_vertical|end"
+                android:textSize="@dimen/sp_14"/>
+
+            <EditText
+                android:id="@+id/key_release_txt_edit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text=""
+                android:textSize="@dimen/sp_14"
+                android:inputType="text"
+                android:lines="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="match_parent"
+                android:text="定时时间: "
+                android:gravity="center_vertical|end"
+                android:textSize="@dimen/sp_14"/>
+
+            <EditText
+                android:id="@+id/key_time_edit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="@dimen/sp_14"
+                android:inputType="text"
+                android:lines="1"/>
+
+        </TableRow>
+
+        <include layout="@layout/inc_save_del_layout"/>
+
+    </TableLayout>
+
+</LinearLayout>

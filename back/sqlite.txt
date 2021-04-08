@@ -17,13 +17,13 @@ key_table
 
 键位表(多个键位可能对应同一个连接):
 	
-	id索引  ip对应连接地址(根据地址获取port & type)  title键位名称 txt键位内容  type发送类型(str: 0, hex: 1) time定时时间 
+	id索引  ip对应连接地址(根据地址获取port & type)  title键位名称 click_txt短按发送 lclick_txt长按发送 release_txt释放发送  type发送类型(str: 0, hex: 1) time定时时间
 
 sql: 
 	
 	{
 
-		CREATE TABLE IF NOT EXISTS key_table(id INTEGER PRIMARY KEY AUTOINCREMENT, ip VARCHAR, title TEXT, type INTEGER, time INTEGER)
+		CREATE TABLE IF NOT EXISTS key_table(id INTEGER PRIMARY KEY AUTOINCREMENT, ip VARCHAR, title TEXT, click_txt TEXT, lclick_txt TEXT, release_txt TEXT, type INTEGER, time INTEGER)
 	}
 
 sys_table

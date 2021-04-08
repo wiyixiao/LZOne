@@ -27,7 +27,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //创建设备对应的按键数据表
         db.execSQL("CREATE TABLE IF NOT EXISTS key_table(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "ip VARCHAR, title TEXT, type INTEGER, time INTEGER)");
+                "ip VARCHAR, title TEXT, click_txt TEXT, lclick_txt TEXT, release_txt TEXT, type INTEGER, time INTEGER)");
 
         //创建系统配置数据表
         db.execSQL("CREATE TABLE IF NOT EXISTS sys_table(id INTEGER PRIMARY KEY AUTOINCREMENT, " +

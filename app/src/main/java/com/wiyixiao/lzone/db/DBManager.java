@@ -18,5 +18,9 @@ public class DBManager {
         this.db = dbHelper.getWritableDatabase();
     }
 
+    public void close() {
+        dbHelper.close();
+    }
+
 
 }
