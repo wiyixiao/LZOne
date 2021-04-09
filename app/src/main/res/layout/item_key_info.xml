@@ -3,6 +3,17 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_5"
+        android:gravity="center">
+
+        <include layout="@layout/inc_send_type_layout"/>
+
+    </LinearLayout>
+
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,16 +25,8 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <include layout="@layout/inc_send_type_layout"/>
-
-        </TableRow>
-
-        <TableRow
-            android:gravity="center"
-            android:orientation="horizontal">
-
             <TextView
-                android:layout_width="@dimen/dp_60"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="按键名: "
                 android:gravity="center_vertical|end"
@@ -46,11 +49,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="@dimen/dp_60"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="短按发送: "
                 android:gravity="center_vertical|end"
-                android:textSize="@dimen/sp_14"/>
+                android:text="短按发送: "
+                android:textSize="@dimen/sp_14" />
 
             <EditText
                 android:id="@+id/key_click_txt_edit"
@@ -69,7 +72,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="@dimen/dp_60"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="长按发送: "
                 android:gravity="center_vertical|end"
@@ -92,7 +95,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="@dimen/dp_60"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="释放发送: "
                 android:gravity="center_vertical|end"
@@ -115,7 +118,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="@dimen/dp_60"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="定时时间: "
                 android:gravity="center_vertical|end"

@@ -20,6 +20,7 @@ import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.utils.DisplayUtils;
+import com.wiyixiao.lzone.views.SettingView;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -36,6 +37,7 @@ public class ControlActivity extends AppCompatActivity {
     private Context mContext;
     private MyApplication myApplication;
 
+    private SettingView settingView;
     private DeviceInfoBean bean;
 
     @Override
@@ -62,6 +64,16 @@ public class ControlActivity extends AppCompatActivity {
                 String.format("%s:%s",bean.getDevice_ip(), bean.getDevice_port()),
                 getResources().getDimensionPixelOffset(R.dimen.sp_22),
                 Color.WHITE);
+
+        //设置页面
+        settingView = SettingView.getInstance(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        settingView.destoryView();
     }
 
     @Override
@@ -77,7 +89,7 @@ public class ControlActivity extends AppCompatActivity {
                 break;
             case R.id.item_set:
                 //显示设置弹窗
-
+                settingView.showDialog();
                 break;
             default:
                 break;

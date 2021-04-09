@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_20"
-            android:text="Str"
+            android:text="@string/NAL_setting_ascii"
             android:textSize="@dimen/sp_12"
             android:checked="true"/>
 
@@ -22,7 +22,7 @@
             android:id="@+id/hex_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hex"
+            android:text="@string/NAL_setting_hex"
             android:textSize="@dimen/sp_12"/>
 
     </RadioGroup>

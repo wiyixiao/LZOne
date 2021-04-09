@@ -24,9 +24,20 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\Think\AppData\Local\Temp\ic_android_black_24dp.xml" />
+                                                <entry key="imagePath" value="C:\Users\Think\AppData\Local\Temp\baseline_add_circle_outline_24.xml" />
                                                 <entry key="opacityPercent" value="80" />
                                                 <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="clipartAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="url" value="jar:file:/D:/program/Android/plugins/android/lib/android.jar!/images/material/icons/materialicons/add_circle_outline/baseline_add_circle_outline_24.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -72,10 +83,10 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="imageAsset" value="D:\Git\Gblit\LZOne\back\icon\icon_menu.png" />
                                       <entry key="outputName" value="ic_action_add" />
-                                      <entry key="theme" value="HOLO_DARK" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="ffffff" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -221,7 +232,19 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\Think\AppData\Local\Temp\ic_android_black_24dp.xml" />
+                                                <entry key="imagePath" value="C:\Users\Think\AppData\Local\Temp\baseline_settings_24.xml" />
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="clipartAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="url" value="jar:file:/D:/program/Android/plugins/android/lib/android.jar!/images/material/icons/materialicons/settings/baseline_settings_24.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -246,6 +269,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -257,6 +281,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -266,8 +291,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="imageAsset" value="D:\Git\Gblit\LZOne\back\icon\icon_menu.png" />
+                                      <entry key="outputName" value="ic_setting" />
                                     </map>
                                   </option>
                                 </PersistentState>

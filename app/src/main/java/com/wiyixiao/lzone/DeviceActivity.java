@@ -27,7 +27,9 @@ import android.widget.RadioButton;
 import com.google.gson.Gson;
 import com.wiyixiao.lzone.adapter.DeviceAdapter;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
+import com.wiyixiao.lzone.bean.SettingInfoBean;
 import com.wiyixiao.lzone.data.Constants;
+import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.db.DBManager;
 import com.wiyixiao.lzone.utils.DisplayUtils;
 
@@ -72,6 +74,8 @@ public class DeviceActivity extends AppCompatActivity {
         //初始化数据库
         dbManager = new DBManager(mContext);
 
+        //初始化设置参数
+        initSettingData();
         //初始化已连接设备列表
         initDeviceList();
     }
@@ -139,6 +143,21 @@ public class DeviceActivity extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    private void initSettingData(){
+        if(myApplication.settingData == null){
+            myApplication.settingData = new SettingInfoBean();
+        }
+
+        //读取数据库保存配置，加载
+        if(BuildConfig.DEBUG){
+            myApplication.settingData.setEnd_symbol_str("\r\n");
+            myApplication.settingData.setShow_send(true);
+            myApplication.settingData.setShow_time(true);
+            myApplication.settingData.setRev_type(Vars.RevDataType.STR);
+            return;
+        };
     }
 
     private void initDeviceList(){

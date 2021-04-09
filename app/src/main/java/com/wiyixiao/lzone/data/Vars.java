@@ -12,4 +12,9 @@ public class Vars {
         int ABOUT = 1;
     }
 
+    public interface  RevDataType{
+        int STR = 0;
+        int HEX = 1;
+    }
+
 }

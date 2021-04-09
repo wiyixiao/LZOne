@@ -10,14 +10,18 @@
 	<string name="NAL_menu_add">Add</string>
 	<string name="NAL_menu_clear">Clear</string>
 	<string name="NAL_menu_help">Help</string>
+	<string name="NAL_menu_key">Add button</string>
+	<string name="NAL_menu_set">Setting parameters</string>
 	<string name="NAL_device_added">Device has been added</string>
 	<string name="NAL_device_invalid">Invalid operation</string>
 	<string name="NAL_device_zero">Number of devices: 0</string>
 	<string name="NAL_input_empty">Input can not be empty</string>
 	<string name="NAL_device_cfg">Device config</string>
+	<string name="NAL_key_cfg">Key config</string>
 	<string name="NAL_device_tcp">TCP</string>
 	<string name="NAL_device_udp">UDP</string>
-	<string name="NAL_menu_key">Add button</string>
-	<string name="NAL_menu_set">Setting parameters</string>
-	<string name="NAL_key_cfg">Key config</string>
+	<string name="NAL_setting_txt">Settings</string>
+	<string name="NAL_setting_ascii">ASCII</string>
+	<string name="NAL_setting_hex">HEX</string>
+
 </resources>
