@@ -31,7 +31,7 @@ allprojects {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         google()
         jcenter()
-//        maven { url "https://jitpack.io" }
+        maven { url "https://jitpack.io" }
     }
 }
 

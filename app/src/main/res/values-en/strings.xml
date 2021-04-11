@@ -23,5 +23,7 @@
 	<string name="NAL_setting_txt">Settings</string>
 	<string name="NAL_setting_ascii">ASCII</string>
 	<string name="NAL_setting_hex">HEX</string>
+	<string name="NAL_menu_key_set">Key configuration</string>
+	<string name="NAL_key_init">Restore Defaults</string>
 
 </resources>

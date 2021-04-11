@@ -7,7 +7,7 @@ public class KeyInfoBean {
     private String txt_lclick;
     private String txt_release;
     private String time;
-    private int type;   //0: Str, 1: Hex
+    private int type;   //0: Ascii, 1: Hex
 
     public String getName() {
         return name;

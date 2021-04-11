@@ -76,13 +76,19 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_5"
                 android:text="显示发送"/>
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_5"
                 android:text="显示发送时间"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="定时发送"/>
 
         </LinearLayout>
 
@@ -107,12 +113,15 @@
             android:orientation="horizontal">
 
             <RadioButton
+                android:id="@+id/ascii_rbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:text="@string/NAL_setting_ascii"/>
+                android:text="@string/NAL_setting_ascii"
+                android:checked="true"/>
 
             <RadioButton
+                android:id="@+id/hex_rbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/NAL_setting_hex"/>
@@ -147,6 +156,7 @@
                 android:orientation="horizontal">
 
                 <RadioButton
+                    android:id="@+id/rn_rbtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_5"
@@ -154,12 +164,14 @@
                     android:checked="true"/>
 
                 <RadioButton
+                    android:id="@+id/n_rbtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_5"
                     android:text="char('\\n')"/>
 
                 <RadioButton
+                    android:id="@+id/not_rn_rbtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="其他"/>

@@ -6,6 +6,10 @@
         android:title="@string/NAL_menu_key" />
 
     <item
+        android:id="@+id/item_key_set"
+        android:title="@string/NAL_menu_key_set" />
+
+    <item
         android:id="@+id/item_set"
         android:title="@string/NAL_menu_set" />
 

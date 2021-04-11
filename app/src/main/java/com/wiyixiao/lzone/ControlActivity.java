@@ -12,31 +12,45 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 
+import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.google.gson.Gson;
+import com.wiyixiao.lzone.adapter.KeysAdapter;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.utils.DisplayUtils;
+import com.wiyixiao.lzone.views.KeyPadView;
 import com.wiyixiao.lzone.views.SettingView;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Objects;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 public class ControlActivity extends AppCompatActivity {
 
     @BindView(R.id.msg_lv)
     ListView msgLv;
-    @BindView(R.id.key_layout)
-    LinearLayout keyLayout;
+    @BindView(R.id.keypad_view)
+    KeyPadView keyPadView;
 
     private Context mContext;
     private MyApplication myApplication;
+    private Unbinder unbinder;
 
+    //设置
     private SettingView settingView;
     private DeviceInfoBean bean;
 
@@ -47,6 +61,7 @@ public class ControlActivity extends AppCompatActivity {
 
         mContext = this.getApplicationContext();
         myApplication = (MyApplication)mContext;
+        unbinder = ButterKnife.bind(this);
 
         String device_json = getIntent().getStringExtra(Constants.DEVICE_INTENT_NAME);
         bean = new Gson().fromJson(device_json, DeviceInfoBean.class);
@@ -73,6 +88,7 @@ public class ControlActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        unbinder.unbind();
         settingView.destoryView();
     }
 
@@ -86,6 +102,9 @@ public class ControlActivity extends AppCompatActivity {
             case R.id.item_key:
                 //增加按钮弹窗
                 showKeyEditDialog(null);
+                break;
+            case R.id.item_key_set:
+                DisplayUtils.showMsg(mContext, "进入按键配置模式");
                 break;
             case R.id.item_set:
                 //显示设置弹窗
@@ -127,4 +146,31 @@ public class ControlActivity extends AppCompatActivity {
                 //显示对话框
                 .show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

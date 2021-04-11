@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:background="@color/colorWhite">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleViewKeys"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/dp_5" />
+
+        <Button
+            android:id="@+id/key_init_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/NAL_key_init"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <SeekBar
+        android:id="@+id/seekBarKeys"
+        android:layout_width="@dimen/dp_80"
+        android:layout_height="@dimen/dp_3"
+        android:layout_gravity="center_horizontal"
+        android:focusable="true"
+        android:paddingTop="@dimen/dp_2"
+        android:progressDrawable="@drawable/bg_fast_scroll_bar_track"
+        android:thumb="@drawable/bg_fast_scroll_bar_thumb"
+        android:visibility="visible" />
+
+</LinearLayout>

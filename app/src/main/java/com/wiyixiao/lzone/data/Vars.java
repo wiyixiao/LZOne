@@ -13,7 +13,7 @@ public class Vars {
     }
 
     public interface  RevDataType{
-        int STR = 0;
+        int ASCII = 0;
         int HEX = 1;
     }
 

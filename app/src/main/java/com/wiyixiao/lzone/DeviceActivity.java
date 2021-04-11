@@ -45,7 +45,6 @@ public class DeviceActivity extends AppCompatActivity {
 
     private MyApplication myApplication;
     private Context mContext;
-    private DBManager dbManager;
 
     private ArrayList<DeviceInfoBean> deviceArrayList;
     private DeviceAdapter deviceAdapter;
@@ -72,7 +71,7 @@ public class DeviceActivity extends AppCompatActivity {
 
 
         //初始化数据库
-        dbManager = new DBManager(mContext);
+        myApplication.dbManager = new DBManager(mContext);
 
         //初始化设置参数
         initSettingData();
@@ -85,6 +84,9 @@ public class DeviceActivity extends AppCompatActivity {
         super.onDestroy();
 
         unbinder.unbind();
+
+        myApplication.dbManager.close();
+        myApplication.dbManager = null;
     }
 
     //TODO 状态栏按钮
@@ -155,7 +157,7 @@ public class DeviceActivity extends AppCompatActivity {
             myApplication.settingData.setEnd_symbol_str("\r\n");
             myApplication.settingData.setShow_send(true);
             myApplication.settingData.setShow_time(true);
-            myApplication.settingData.setRev_type(Vars.RevDataType.STR);
+            myApplication.settingData.setRev_type(Vars.RevDataType.ASCII);
             return;
         };
     }
