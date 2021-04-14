@@ -16,6 +16,7 @@ import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.KeysAdapter;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
+import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 import com.wiyixiao.lzone.utils.DisplayUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -51,24 +52,57 @@ public class KeyPadView extends LinearLayout {
     private KeysAdapter<KeyInfoBean> keysAdapter;
     private ArrayList<KeyInfoBean> keyArrayList;
 
+    private IKeyPadListener keyPadListener;
+
     public KeyPadView(Context context) {
         super(context);
-
-        mContext = context;
+        myApplication = (MyApplication)context.getApplicationContext();
         viewInit();
     }
 
     public KeyPadView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        mContext = context;
+        myApplication = (MyApplication)context.getApplicationContext();
         viewInit();
+    }
+
+    public void keySetListener(Context context, IKeyPadListener listener){
+        this.mContext = context;
+        this.keyPadListener = listener;
+    }
+
+    public void keyAdd(KeyInfoBean bean){
+
+        //获取当前按键数量
+        int count = keyArrayList.size();
+
+        //自增按键索引
+        bean.setIndex(count);
+
+        keyArrayList.add(bean);
+        keysAdapter.notifyDataSetChanged();
+    }
+
+    public boolean keyRemove(KeyInfoBean bean, String ip){
+
+        boolean state = false;
+
+        if(!keyArrayList.contains(bean)){
+            return false;
+        }
+
+        state = keyArrayList.remove(bean);
+        keysAdapter.notifyDataSetChanged();
+
+        return state;
+    }
+
+    public void keyUpdate(){
+        keysAdapter.notifyDataSetChanged();
     }
 
     private void viewInit(){
         View inflate = inflate(getContext(), R.layout.view_keypad, this);
-
-        myApplication = (MyApplication)mContext.getApplicationContext();
         unbinder = ButterKnife.bind(this, inflate);
 
         initKeysView();
@@ -114,6 +148,7 @@ public class KeyPadView extends LinearLayout {
         for(int i=0;i<myApplication.keyDdefaultCount;i++){
             KeyInfoBean bean = new KeyInfoBean();
             bean.setName(String.format("前进%s", i));
+            bean.setIndex(i);
             keyArrayList.add(bean);
         }
 
@@ -153,7 +188,11 @@ public class KeyPadView extends LinearLayout {
                 holder.getView(R.id.key_btn).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        DisplayUtils.showMsg(mContext, item.getName());
+                        if(cfgMode){
+                            keyPadListener.keyEdit(item);
+                        }else {
+                            DisplayUtils.showMsg(mContext, item.getName() + "," + item.getIndex());
+                        }
                     }
                 });
             }
@@ -191,7 +230,13 @@ public class KeyPadView extends LinearLayout {
                 GradientDrawable gradientDrawable = (GradientDrawable) keysSeekBar.getThumb();
                 //根据列表的个数，动态设置游标的大小，设置游标的时候，progress进度的颜色设置为和seekbar的颜色设置的一样的，
                 // 所以就不显示进度了。
-                gradientDrawable.setSize(extent / (keysAdapter.getData().size() / 2), 5);
+                int size;
+                try {
+                    size = extent / (keysAdapter.getData().size() / 2);
+                }catch (Exception e){
+                    size = 0;
+                }
+                gradientDrawable.setSize(size, 5);
                 //设置可滚动区域
                 keysSeekBar.setMax((int) (range - extent));
                 if (dx == 0) {
@@ -209,5 +254,8 @@ public class KeyPadView extends LinearLayout {
 
         });
     }
+
+    /*****************************************弹窗*****************************************/
+
 
 }

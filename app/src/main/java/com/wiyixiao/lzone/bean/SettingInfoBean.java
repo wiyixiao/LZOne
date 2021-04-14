@@ -39,6 +39,32 @@ public class SettingInfoBean {
         this.rev_type = rev_type;
     }
 
+    public int getConn_type() {
+        return conn_type;
+    }
+
+    public void setConn_type(int conn_type) {
+        this.conn_type = conn_type;
+    }
+
+    public boolean isAuto() {
+        return auto;
+    }
+
+    public void setAuto(boolean auto) {
+        this.auto = auto;
+    }
+
+    /**
+     * @Desc: 连接类型，与设备信息相关
+     */
+    private int conn_type;
+
+    /**
+     * @Desc: 是否定时发送，与设备信息相关
+     */
+    private boolean auto;
+
     /**
      * @Desc: 是否显示发送数据
      * true | false
@@ -47,7 +73,7 @@ public class SettingInfoBean {
 
     /**
      * @Desc: 接收数据类型
-     * Str | Hex
+     * ASCII | Hex
      * 0 | 1
      */
     private int rev_type;

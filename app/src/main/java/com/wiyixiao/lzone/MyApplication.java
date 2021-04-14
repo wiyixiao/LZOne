@@ -26,20 +26,20 @@ public class MyApplication extends ApplaicationBase {
     /**
      * @Desc: 设置界面数据全局变量
      */
-    public SettingInfoBean settingData;
+    public final SettingInfoBean settingData = new SettingInfoBean();
 
     /**
      * @Desc: 键盘默认行数
      */
-    public int keyPadRow = 4;
+    public final int keyPadRow = 4;
 
     /**
      * @Desc: 键盘默认列数
      */
-    public int keyPadCol = 4;
+    public final int keyPadCol = 4;
 
     /**
      * 没有自定义设置时的默认按键数量
      */
-    public int keyDdefaultCount = 20;
+    public final int keyDdefaultCount = 20;
 }

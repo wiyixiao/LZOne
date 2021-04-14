@@ -148,10 +148,6 @@ public class DeviceActivity extends AppCompatActivity {
     }
 
     private void initSettingData(){
-        if(myApplication.settingData == null){
-            myApplication.settingData = new SettingInfoBean();
-        }
-
         //读取数据库保存配置，加载
         if(BuildConfig.DEBUG){
             myApplication.settingData.setEnd_symbol_str("\r\n");
