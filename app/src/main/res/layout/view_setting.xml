@@ -109,18 +109,21 @@
             android:orientation="horizontal">
 
             <CheckBox
+                android:id="@+id/cb_show_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_5"
                 android:text="显示发送"/>
 
             <CheckBox
+                android:id="@+id/cb_show_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_5"
                 android:text="显示发送时间"/>
 
             <CheckBox
+                android:id="@+id/cb_auto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="定时发送"/>
@@ -219,6 +222,7 @@
                 android:padding="@dimen/dp_5">
 
                 <EditText
+                    android:id="@+id/edit_hex_rn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0D 0A"

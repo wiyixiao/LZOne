@@ -4,18 +4,17 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
-import com.wiyixiao.lzone.ControlActivity;
 import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.KeysAdapter;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
+import com.wiyixiao.lzone.interfaces.IKeyEditListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 import com.wiyixiao.lzone.utils.DisplayUtils;
 
@@ -53,15 +52,56 @@ public class KeyPadView extends LinearLayout {
     private ArrayList<KeyInfoBean> keyArrayList;
 
     private IKeyPadListener keyPadListener;
+    private KeyEditDialog keyEditDialog;
+
+    private String ip;
+
+    private IKeyEditListener iKeyEditListener = new IKeyEditListener() {
+        @Override
+        public void add(KeyInfoBean bean) {
+
+            //非配置模式且不包含则添加、否则更新
+            if(!cfgMode && !keyArrayList.contains(bean)){
+                //获取当前按键数量
+                int count = keyArrayList.size();
+
+                //自增按键索引
+                bean.setIndex(count);
+                keyArrayList.add(bean);
+
+                //添加数据库
+
+            }else{
+                //更新数据库
+
+            }
+
+            keysAdapter.notifyDataSetChanged();
+            keyEditDialog.dismissDialog();
+        }
+
+        @Override
+        public void remove(KeyInfoBean bean) {
+            //包含该按键并且为配置模式，则进行按键移除操作
+            if(cfgMode && keyArrayList.contains(bean)){
+                keyArrayList.remove(bean);
+                keysAdapter.notifyDataSetChanged();
+
+                keyEditDialog.dismissDialog();
+            }
+        }
+    };
 
     public KeyPadView(Context context) {
         super(context);
+        //keyEditView = KeyEditView.getInstance(context);
         myApplication = (MyApplication)context.getApplicationContext();
         viewInit();
     }
 
     public KeyPadView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        keyEditDialog = KeyEditDialog.getInstance(context, iKeyEditListener);
         myApplication = (MyApplication)context.getApplicationContext();
         viewInit();
     }
@@ -71,34 +111,20 @@ public class KeyPadView extends LinearLayout {
         this.keyPadListener = listener;
     }
 
-    public void keyAdd(KeyInfoBean bean){
-
-        //获取当前按键数量
-        int count = keyArrayList.size();
-
-        //自增按键索引
-        bean.setIndex(count);
-
-        keyArrayList.add(bean);
-        keysAdapter.notifyDataSetChanged();
-    }
-
-    public boolean keyRemove(KeyInfoBean bean, String ip){
-
-        boolean state = false;
-
-        if(!keyArrayList.contains(bean)){
-            return false;
+    public void keyShowEditDialog(){
+        if(!cfgMode){
+            keyEditDialog.showDialog(null);
         }
-
-        state = keyArrayList.remove(bean);
-        keysAdapter.notifyDataSetChanged();
-
-        return state;
     }
 
-    public void keyUpdate(){
-        keysAdapter.notifyDataSetChanged();
+    public void keyClear(){
+        if(keyArrayList.size() > 0){
+            keyArrayList.clear();
+            keysAdapter.notifyDataSetChanged();
+
+            //更新数据库
+
+        }
     }
 
     private void viewInit(){
@@ -114,6 +140,7 @@ public class KeyPadView extends LinearLayout {
 
         Log.e(myApplication.getTAG(), "按键控件资源释放");
         unbinder.unbind();
+        keyEditDialog.destoryView();
 
         super.finalize();
     }
@@ -189,7 +216,7 @@ public class KeyPadView extends LinearLayout {
                     @Override
                     public void onClick(View v) {
                         if(cfgMode){
-                            keyPadListener.keyEdit(item);
+                            keyEditDialog.showDialog(item);
                         }else {
                             DisplayUtils.showMsg(mContext, item.getName() + "," + item.getIndex());
                         }
@@ -249,13 +276,10 @@ public class KeyPadView extends LinearLayout {
                     keysSeekBar.setProgress(offset);
                 }
 
-
             }
 
         });
     }
-
-    /*****************************************弹窗*****************************************/
 
 
 }

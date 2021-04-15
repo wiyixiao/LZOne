@@ -8,11 +8,13 @@ import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
 import butterknife.Unbinder;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,7 +130,7 @@ public class DeviceActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, ControlActivity.class);
                 //发送设备信息
                 intent.putExtra(Constants.DEVICE_INTENT_NAME, new Gson().toJson(deviceArrayList.get(position)));
-                startActivity(intent);
+                startActivityForResult(intent, Constants.REQUEST_CONTROL_BACK);
                 break;
             default:
                 break;
@@ -145,6 +147,28 @@ public class DeviceActivity extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode != Activity.RESULT_OK){
+            return;
+        }
+
+        switch (requestCode){
+            case Constants.REQUEST_CONTROL_BACK:
+                String device_json = data.getStringExtra(Constants.DEVICE_INTENT_NAME);
+                if(BuildConfig.DEBUG){
+                    Log.e(myApplication.getTAG(), device_json);
+                }
+                deviceUpdate(device_json);
+                break;
+            default:
+                break;
+        }
+
     }
 
     private void initSettingData(){
@@ -296,6 +320,24 @@ public class DeviceActivity extends AppCompatActivity {
         System.out.println(String.format("添加或更新设备: %s", bean.getDevice_ip()));
         //更新数据库
 
+    }
+
+    private void deviceUpdate(String json){
+        DeviceInfoBean bean = new Gson().fromJson(json, DeviceInfoBean.class);
+
+        for (DeviceInfoBean b: deviceArrayList
+             ) {
+            if(b.getDevice_ip().equals(bean.getDevice_ip())){
+                b.setAuto(bean.isAuto());
+                b.setDevice_type(bean.getDevice_type());
+
+                //更新数据库
+
+                break;
+            }
+        }
+
+        deviceAdapter.notifyDataSetChanged();
     }
 
 }

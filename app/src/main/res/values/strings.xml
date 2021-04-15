@@ -12,6 +12,7 @@
     <string name="NAL_menu_clear">清除</string>
     <string name="NAL_menu_help">帮助</string>
     <string name="NAL_menu_key">增加按键</string>
+    <string name="NAL_menu_key_clear">清除按键</string>
     <string name="NAL_menu_key_set">配置按键</string>
     <string name="NAL_menu_set">设置参数</string>
 

@@ -11,6 +11,8 @@
 	<string name="NAL_menu_clear">清除</string>
 	<string name="NAL_menu_help">帮助</string>
 	<string name="NAL_menu_key">增加按键</string>
+	<string name="NAL_menu_key_clear">清除按键</string>
+	<string name="NAL_menu_key_set">配置按键</string>
 	<string name="NAL_menu_set">设置参数</string>
 	<string name="NAL_device_added">设备已添加</string>
 	<string name="NAL_device_invalid">无效操作</string>
@@ -23,7 +25,6 @@
 	<string name="NAL_setting_txt">设置</string>
 	<string name="NAL_setting_ascii">ASCII</string>
 	<string name="NAL_setting_hex">HEX</string>
-	<string name="NAL_menu_key_set">配置按键</string>
 	<string name="NAL_key_init">恢复默认</string>
 
 </resources>
