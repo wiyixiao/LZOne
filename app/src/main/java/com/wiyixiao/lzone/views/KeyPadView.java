@@ -1,27 +1,34 @@
 package com.wiyixiao.lzone.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
+import com.wiyixiao.lzone.BuildConfig;
 import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
-import com.wiyixiao.lzone.adapter.KeysAdapter;
+import com.wiyixiao.lzone.adapter.MyAdapter;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
+import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.interfaces.IKeyEditListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
-import com.wiyixiao.lzone.utils.DisplayUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,17 +51,31 @@ public class KeyPadView extends LinearLayout {
 
     //是否开启按键配置模式
     private boolean cfgMode = false;
-    //是否开启发送定时模式
-    private boolean timingMode = false;
 
     //按键
-    private KeysAdapter<KeyInfoBean> keysAdapter;
+    private MyAdapter<KeyInfoBean> keysAdapter;
     private ArrayList<KeyInfoBean> keyArrayList;
 
     private IKeyPadListener keyPadListener;
     private KeyEditDialog keyEditDialog;
 
     private String ip;
+
+    private Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message msg) {
+
+            switch (msg.what){
+                case Constants.KEY_LONG_PRESS:
+                    keyPadListener.long_press(msg.obj.toString());
+                    break;
+                default:
+                    break;
+            }
+
+            return false;
+        }
+    });
 
     private IKeyEditListener iKeyEditListener = new IKeyEditListener() {
         @Override
@@ -90,25 +111,30 @@ public class KeyPadView extends LinearLayout {
                 keyEditDialog.dismissDialog();
             }
         }
+
+
     };
 
     public KeyPadView(Context context) {
         super(context);
-        //keyEditView = KeyEditView.getInstance(context);
         myApplication = (MyApplication)context.getApplicationContext();
-        viewInit();
+        initView();
     }
 
     public KeyPadView(Context context, AttributeSet attrs) {
         super(context, attrs);
         keyEditDialog = KeyEditDialog.getInstance(context, iKeyEditListener);
         myApplication = (MyApplication)context.getApplicationContext();
-        viewInit();
+        initView();
     }
 
-    public void keySetListener(Context context, IKeyPadListener listener){
+    public void keySetListener(Context context, IKeyPadListener listener, String ip){
         this.mContext = context;
+        this.ip = ip;
         this.keyPadListener = listener;
+
+        this.keyLongListener = new KeyLongListener(this);
+        this.keyTouchListener = new KeyTouchListener(this);
     }
 
     public void keyShowEditDialog(){
@@ -122,12 +148,12 @@ public class KeyPadView extends LinearLayout {
             keyArrayList.clear();
             keysAdapter.notifyDataSetChanged();
 
-            //更新数据库
+            //根据IP，更新数据库
 
         }
     }
 
-    private void viewInit(){
+    private void initView(){
         View inflate = inflate(getContext(), R.layout.view_keypad, this);
         unbinder = ButterKnife.bind(this, inflate);
 
@@ -135,13 +161,16 @@ public class KeyPadView extends LinearLayout {
         initKeysSeekBar();
     }
 
-    @Override
-    protected  void finalize() throws Throwable{
-
-        Log.e(myApplication.getTAG(), "按键控件资源释放");
+    public void close(){
+        longPress = false;
         unbinder.unbind();
         keyEditDialog.destoryView();
 
+        Log.e(myApplication.getTAG(), "按键控件资源释放");
+    }
+
+    @Override
+    protected  void finalize() throws Throwable{
         super.finalize();
     }
 
@@ -154,12 +183,133 @@ public class KeyPadView extends LinearLayout {
         this.cfgMode = cfgMode;
     }
 
-    public boolean isTimingMode() {
-        return timingMode;
+    /*****************************************按键事件*****************************************/
+
+    private boolean longPress = false;
+    private boolean longPressFlag = false;
+    private KeyInfoBean longPressKey = null;
+
+    private KeyTouchListener keyTouchListener = null;
+    private KeyLongListener keyLongListener = null;
+
+    private static class KeyLongListener implements OnLongClickListener{
+
+        private Thread longWorkThread = null;
+        private KeyInfoBean bean;
+        private KeyPadView pad;
+
+        private void work(){
+            if(null != longWorkThread){
+                return;
+            }
+
+            pad.longPress = true; //默认开启长按线程
+            if(BuildConfig.DEBUG){
+                System.out.println("********* key long press init **********");
+            }
+
+            longWorkThread = new Thread(){
+                @Override
+                public void run(){
+                    while (pad.longPress){
+                        try {
+
+                            if(!pad.longPressFlag){
+                                //无长按按键，防止线程卡死
+                                Thread.sleep(2);
+
+                            }else{
+                                //检测各长按按键定时时间
+                                Message msg = new Message();
+                                msg.what = Constants.KEY_LONG_PRESS;
+                                msg.obj = bean.getTxt_lclick();
+                                pad.handler.sendMessage(msg);
+                                Thread.sleep(Integer.parseInt(bean.getTime()));
+                            }
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if(BuildConfig.DEBUG){
+                        System.out.println("KeyLongPressThread Exit!");
+                    }
+                }
+            };
+
+            longWorkThread.setName("KeyLongPressThread");
+            longWorkThread.start();
+        }
+
+        private KeyLongListener(KeyPadView pad){
+            this.pad = pad;
+            work();
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+
+            //配置模式 或者 长按模式已经触发 则不执行长按
+            if(pad.cfgMode || pad.longPressFlag){
+                if(BuildConfig.DEBUG){
+                    System.out.println("********* key long pressing **********");
+                }
+                return false;
+            }
+
+            Button btn = (Button)v;
+            btn.setTextColor(Color.RED);
+            bean = (KeyInfoBean)v.getTag();
+            pad.longPressFlag = true;
+            pad.longPressKey = bean;
+
+            return true;
+        }
+
     }
 
-    public void setTimingMode(boolean timingMode) {
-        this.timingMode = timingMode;
+    private static class KeyTouchListener implements OnTouchListener{
+
+        private KeyInfoBean bean;
+        private KeyPadView pad;
+
+        private KeyTouchListener(KeyPadView pad){
+            this.pad = pad;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(pad.cfgMode){
+                return false;
+            }
+
+            bean = (KeyInfoBean)v.getTag();
+
+            switch (event.getAction() & MotionEvent.ACTION_MASK){
+                case MotionEvent.ACTION_DOWN:
+                    if(!bean.equals(pad.longPressKey)){
+                        pad.keyPadListener.short_press(bean.getTxt_click());
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if(bean.equals(pad.longPressKey)){
+                        //只有处于长按状态的按键释放才退出长按
+                        //保证长按的时候，其他按键可以发送短按和释放命令
+                        Button btn = (Button)v;
+                        btn.setTextColor(Color.BLACK);
+                        pad.longPressFlag = false;
+                        pad.longPressKey = null;
+                    }
+                    pad.keyPadListener.release_press(bean.getTxt_release());
+
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
     }
 
     /*****************************************初始化*****************************************/
@@ -201,33 +351,40 @@ public class KeyPadView extends LinearLayout {
         final int key_w = parent_width / myApplication.keyPadCol;
         final int key_h = parent_height / myApplication.keyPadRow;
 
-        keysAdapter = new KeysAdapter<KeyInfoBean>(R.layout.item_key, keyArrayList) {
+        keysAdapter = new MyAdapter<KeyInfoBean>(R.layout.item_key, keyArrayList) {
             @Override
             public void setViewData(BaseViewHolder holder, KeyInfoBean item, int position) {
                 Button btn = holder.getView(R.id.key_btn);
                 btn.setText(item.getName());
                 btn.setWidth(key_w);
                 btn.setHeight(key_h);
+                btn.setTag(item);    //设置索引
             }
 
             @Override
             public void setEvent(BaseViewHolder holder, KeyInfoBean item, int position) {
+
+                //设置点击
                 holder.getView(R.id.key_btn).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(cfgMode){
                             keyEditDialog.showDialog(item);
-                        }else {
-                            DisplayUtils.showMsg(mContext, item.getName() + "," + item.getIndex());
                         }
                     }
                 });
+
+                //设置触摸
+                holder.getView(R.id.key_btn).setOnTouchListener(keyTouchListener);
+
+                //设置长按
+                holder.getView(R.id.key_btn).setOnLongClickListener(keyLongListener);
             }
         };
 
         //添加控件
         GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext,
-                myApplication.keyPadRow, LinearLayoutManager.HORIZONTAL, false);
+                myApplication.keyPadRow, LinearLayoutManager.VERTICAL, false);
         keysRv.setLayoutManager(gridLayoutManager);
         keysRv.setAdapter(keysAdapter);
     }
@@ -247,11 +404,11 @@ public class KeyPadView extends LinearLayout {
                 super.onScrolled(recyclerView, dx, dy);
 
                 //显示区域的高度。
-                int extent = keysRv.computeHorizontalScrollExtent();
+                int extent = keysRv.computeVerticalScrollExtent();
                 //整体的高度，注意是整体，包括在显示区域之外的。
-                int range = keysRv.computeHorizontalScrollRange();
+                int range = keysRv.computeVerticalScrollRange();
                 //已经向下滚动的距离，为0时表示已处于顶部。
-                int offset = keysRv.computeHorizontalScrollOffset();
+                int offset = keysRv.computeVerticalScrollOffset();
                 //Log.i("dx------", range + "****" + extent + "****" + offset);
                 //此处获取seekbar的getThumb，就是可以滑动的小的滚动游标
                 GradientDrawable gradientDrawable = (GradientDrawable) keysSeekBar.getThumb();
@@ -266,12 +423,12 @@ public class KeyPadView extends LinearLayout {
                 gradientDrawable.setSize(size, 5);
                 //设置可滚动区域
                 keysSeekBar.setMax((int) (range - extent));
-                if (dx == 0) {
+                if (dy == 0) {
                     keysSeekBar.setProgress(0);
-                } else if (dx > 0) {
+                } else if (dy > 0) {
                     //Log.i("dx------", "右滑");
                     keysSeekBar.setProgress(offset);
-                } else if (dx < 0) {
+                } else if (dy < 0) {
                     //Log.i("dx------", "左滑");
                     keysSeekBar.setProgress(offset);
                 }
@@ -280,6 +437,23 @@ public class KeyPadView extends LinearLayout {
 
         });
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

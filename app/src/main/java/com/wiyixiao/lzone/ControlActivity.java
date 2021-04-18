@@ -11,29 +11,36 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
+import com.wiyixiao.lzone.bean.MsgBean;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 import com.wiyixiao.lzone.utils.DisplayUtils;
 import com.wiyixiao.lzone.views.KeyPadView;
+import com.wiyixiao.lzone.views.MsgView;
 import com.wiyixiao.lzone.views.SettingView;
 
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class ControlActivity extends AppCompatActivity {
 
-    @BindView(R.id.msg_lv)
-    ListView msgLv;
     @BindView(R.id.keypad_view)
     KeyPadView keyPadView;
+    @BindView(R.id.msg_view)
+    MsgView msgView;
+    @BindView(R.id.clear_btn)
+    ImageButton clearBtn;
 
     private Context mContext;
     private MyApplication myApplication;
@@ -45,6 +52,35 @@ public class ControlActivity extends AppCompatActivity {
 
     private IKeyPadListener mKeyPadListener = new IKeyPadListener() {
 
+        @Override
+        public void short_press(String data) {
+            if(BuildConfig.DEBUG){
+                System.out.println("***************************************");
+                System.out.println(data);
+            }
+
+            msgView.add(data, Vars.MsgType.SEND);
+        }
+
+        @Override
+        public void long_press(String data) {
+            if(BuildConfig.DEBUG){
+                System.out.println("***************************************");
+                System.out.println(data);
+            }
+
+            msgView.add(data, Vars.MsgType.SEND);
+        }
+
+        @Override
+        public void release_press(String data) {
+            if(BuildConfig.DEBUG){
+                System.out.println("***************************************");
+                System.out.println(data);
+            }
+
+            msgView.add(data, Vars.MsgType.SEND);
+        }
     };
 
     @Override
@@ -75,15 +111,18 @@ public class ControlActivity extends AppCompatActivity {
 
         //设置页面
         settingView = SettingView.getInstance(this);
-        keyPadView.keySetListener(mContext, mKeyPadListener);
+        keyPadView.keySetListener(mContext, mKeyPadListener, deviceInfoBean.getDevice_ip());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        unbinder.unbind();
+        keyPadView.close();
+        msgView.close();
         settingView.destoryView();
+
+        unbinder.unbind();
     }
 
     @Override
@@ -133,6 +172,18 @@ public class ControlActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_control_layout, menu);
         return true;
+    }
+
+    @OnClick({R.id.clear_btn})
+    public void onClick(View v){
+        int id = v.getId();
+        switch (id){
+            case R.id.clear_btn:
+                msgView.clear();
+                break;
+            default:
+                break;
+        }
     }
 
     private void printDeviceInfo(){

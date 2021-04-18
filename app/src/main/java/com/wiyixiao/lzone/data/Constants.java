@@ -11,8 +11,14 @@ public class Constants {
 
     /**
      * @Desc: Activity Request
-     * 0x10 ~ 0x20
+     * 0x10 ~ 0x19
      */
     public static final int REQUEST_CONTROL_BACK = 0x10;
+
+    /**
+     * @Desc: Key
+     * 0x20 ~ 0x39
+     */
+    public static final int KEY_LONG_PRESS = 0x20;
 
 }

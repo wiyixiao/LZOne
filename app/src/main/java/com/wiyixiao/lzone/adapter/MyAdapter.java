@@ -1,16 +1,21 @@
 package com.wiyixiao.lzone.adapter;
 
+import androidx.annotation.Nullable;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.module.LoadMoreModule;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 
 import java.util.List;
 
-import androidx.annotation.Nullable;
+/**
+ * Author:Think
+ * Time:2021/4/18 22:33
+ * Description:This is BaseAdapter
+ */
+public abstract class MyAdapter<T> extends BaseQuickAdapter<T, BaseViewHolder> implements LoadMoreModule {
 
-public abstract class KeysAdapter<T> extends BaseQuickAdapter<T, BaseViewHolder> implements LoadMoreModule {
-
-    public KeysAdapter(int layoutResId, @Nullable List<T> data) {
+    public MyAdapter(int layoutResId, @Nullable List<T> data) {
         super(layoutResId, data);
     }
 

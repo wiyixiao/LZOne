@@ -11,13 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="@dimen/dp_2"
         android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/msg_lv"
+        <com.wiyixiao.lzone.views.MsgView
+            android:id="@+id/msg_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
     

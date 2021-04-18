@@ -11,43 +11,43 @@ public class KeyInfoBean {
     private int index;
 
     public String getName() {
-        return name;
+        return name == null ? "" : name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name == null ? "" : name;
     }
 
     public String getTxt_click() {
-        return txt_click;
+        return txt_click == null ? "" : txt_click;
     }
 
     public void setTxt_click(String txt_click) {
-        this.txt_click = txt_click;
+        this.txt_click = txt_click == null ? "" : txt_click;
     }
 
     public String getTxt_lclick() {
-        return txt_lclick;
+        return txt_lclick == null ? "" : txt_lclick;
     }
 
     public void setTxt_lclick(String txt_lclick) {
-        this.txt_lclick = txt_lclick;
+        this.txt_lclick = txt_lclick == null ? "" : txt_lclick;
     }
 
     public String getTxt_release() {
-        return txt_release;
+        return txt_release == null ? "" : txt_release;
     }
 
     public void setTxt_release(String txt_release) {
-        this.txt_release = txt_release;
+        this.txt_release = txt_release == null ? "" : txt_release;
     }
 
     public String getTime() {
-        return time;
+        return (time == null || Integer.parseInt(time) < 50) ? "50" : time;
     }
 
     public void setTime(String time) {
-        this.time = time;
+        this.time = (time == null || "".equals(time) || Integer.parseInt(time) < 50) ? "50" : time;
     }
 
     public int getType() {
