@@ -5,11 +5,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,12 +15,10 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.MyAdapter;
-import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.bean.MsgBean;
 import com.wiyixiao.lzone.data.Vars;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

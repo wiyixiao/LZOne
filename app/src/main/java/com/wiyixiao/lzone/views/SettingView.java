@@ -16,9 +16,11 @@ import android.widget.RadioButton;
 import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
+import com.wiyixiao.lzone.data.Vars;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -106,8 +108,27 @@ public class SettingView {
         }
     }
 
-    public void destoryView() {
+    public void close() {
         unbinder.unbind();
+    }
+
+    /************************************Click************************************/
+    @OnClick({R.id.rn_rbtn, R.id.n_rbtn, R.id.not_rn_rbtn})
+    public void onClick(View v){
+        int id = v.getId();
+        switch (id){
+            case R.id.rn_rbtn:
+                editHexRn.setText(Vars.StopCharVal.RN);
+                break;
+            case R.id.n_rbtn:
+                editHexRn.setText(Vars.StopCharVal.N);
+                break;
+            case R.id.not_rn_rbtn:
+                editHexRn.setText(myApplication.cfg.sv_stop_char_val);
+                break;
+            default:
+                break;
+        }
     }
 
     /******************************view duration set******************************/
@@ -141,7 +162,33 @@ public class SettingView {
 
         cbAuto.setChecked(deviceBean.isAuto());
 
-        //从数据库加载其他配置项
+        //从配置文件加载其他配置项
+        {
+            cbShowSend.setChecked(myApplication.cfg.sv_display_send);
+            cbShowTime.setChecked(myApplication.cfg.sv_display_time);
+
+            if(myApplication.cfg.sv_display_type == 0){
+                asciiRbtn.setChecked(true);
+            }else{
+                hexRbtn.setChecked(true);
+            }
+
+            switch (myApplication.cfg.sv_stop_char_type){
+                case Vars.StopCharType.RN:
+                    rnRbtn.setChecked(true);
+                    break;
+                case Vars.StopCharType.N:
+                    nRbtn.setChecked(true);
+                    break;
+                case Vars.StopCharType.CUSTOM:
+                    notRnRbtn.setChecked(true);
+                    break;
+                default:
+                    break;
+            }
+
+            editHexRn.setText(myApplication.cfg.sv_stop_char_val);
+        }
 
     }
 
@@ -149,7 +196,13 @@ public class SettingView {
         deviceBean.setDevice_type(tcpRbtn.isChecked() ? 0 : 1);
         deviceBean.setAuto(cbAuto.isChecked());
 
-        //保存其他配置项到数据库
+        //保存其他配置项到配置文件
+        myApplication.cfg.sv_display_send = cbShowSend.isChecked();
+        myApplication.cfg.sv_display_time = cbShowTime.isChecked();
+        myApplication.cfg.sv_display_type = asciiRbtn.isChecked() ? 0 : 1;
+        myApplication.cfg.sv_stop_char_type = (rnRbtn.isChecked() ? 0 : (nRbtn.isChecked() ? 1 : 2));
+        myApplication.cfg.sv_stop_char_val = editHexRn.getText().toString();
 
+        myApplication.cfg.cfgWrite();
     }
 }

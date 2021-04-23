@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.wiyixiao.lzone.adapter.DeviceAdapter;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.bean.SettingInfoBean;
+import com.wiyixiao.lzone.data.CfgDataManager;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.db.DBManager;
@@ -74,6 +75,8 @@ public class DeviceActivity extends AppCompatActivity {
 
         //初始化数据库
         myApplication.dbManager = new DBManager(mContext);
+        //初始化设置
+        myApplication.settingData = new SettingInfoBean();
 
         //初始化设置参数
         initSettingData();

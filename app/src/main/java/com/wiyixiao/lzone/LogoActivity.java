@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.wiyixiao.lzone.data.CfgDataManager;
+
 public class LogoActivity extends AppCompatActivity {
 
     private MyApplication myApplication;
@@ -50,6 +52,16 @@ public class LogoActivity extends AppCompatActivity {
         setContentView(view);
 
         myApplication = (MyApplication)this.getApplicationContext();
+
+        //初始化配置文件
+        myApplication.cfg = CfgDataManager.getInstance(this);
+        myApplication.cfg.printfCfg();
+
+        if(myApplication.cfg.sv_run_first){
+            myApplication.cfg.sv_run_first = false;
+            myApplication.cfg.cfgWrite();
+        }
+
         showAnimation();
     }
 

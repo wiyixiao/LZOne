@@ -120,7 +120,7 @@ public class ControlActivity extends AppCompatActivity {
 
         keyPadView.close();
         msgView.close();
-        settingView.destoryView();
+        settingView.close();
 
         unbinder.unbind();
     }

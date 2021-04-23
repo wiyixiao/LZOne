@@ -230,6 +230,7 @@
                     android:lines="1"
                     android:gravity="center_vertical"
                     android:paddingStart="@dimen/dp_10"
+                    android:digits="@string/NAL_rule_stopval"
                     android:textColor="@color/colorBlack333333"
                     tools:ignore="RtlSymmetry" />
 

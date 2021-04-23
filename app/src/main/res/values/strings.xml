@@ -33,5 +33,8 @@
 
     <string name="NAL_key_init">恢复默认</string>
 
+<!--    rules-->
+    <string name="NAL_rule_stopval">0123456789ABCDEF</string>
+
 
 </resources>

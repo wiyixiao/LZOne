@@ -1,0 +1,188 @@
+
+
+参考：
+    https://blog.csdn.net/a10615/article/details/52312009
+    https://blog.csdn.net/a10615/article/details/52395592?spm=1001.2014.3001.5501
+    https://blog.csdn.net/a10615/article/details/52427047?spm=1001.2014.3001.5501
+
+
+####################TCP Server####################
+
+private void startTCPServer() {
+    final int port = 8989;
+
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            ServerSocket server = null;
+            try {
+                // 1、创建ServerSocket服务器套接字
+                server = new ServerSocket(port);
+                // 设置连接超时时间，不设置，则是一直阻塞等待
+                server.setSoTimeout(8000);
+
+                // 2、等待被连接。在连接超时时间内连接有效，超时则抛异常，
+                Socket client = server.accept();
+                logD("connected...");
+                // 设置读取流的超时时间，不设置，则是一直阻塞读取
+                client.setSoTimeout(5000);
+
+                // 3、获取输入流和输出流
+                InputStream inputStream = client.getInputStream();
+                OutputStream outputStream = client.getOutputStream();
+
+                // 4、读取数据
+                byte[] buf = new byte[1024];
+                int len = inputStream.read(buf);
+                String receData = new String(buf, 0, len, Charset.forName("UTF-8"));
+                logD("received data from client: " + receData);
+
+                // 5、发送响应数据
+                byte[] responseBuf = "Hi, I am Server".getBytes(Charset.forName("UTF-8"));
+                outputStream.write(responseBuf, 0, responseBuf.length);
+
+            } catch (IOException e) {
+                logD("Exception：" + e.toString());
+                e.printStackTrace();
+            } finally {
+                if (server != null) {
+                    try {
+                        server.close();
+                        server = null;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }
+    }).start();
+}
+
+####################TCP Client####################
+
+private void startTCPClient() {
+    final String host = "192.168.1.214";
+    final int port = 8989;
+
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Socket socket = null;
+            try {
+                // 1、创建连接
+                socket = new Socket(host, port);
+                if (socket.isConnected()) {
+                    logD("connect to Server success");
+                }
+
+                // 2、设置读流的超时时间
+                socket.setSoTimeout(8000);
+
+                // 3、获取输出流与输入流
+                OutputStream outputStream = socket.getOutputStream();
+                InputStream inputStream = socket.getInputStream();
+
+                // 4、发送信息
+                byte[] sendData = "Hello, I am client".getBytes(Charset.forName("UTF-8"));
+                outputStream.write(sendData, 0, sendData.length);
+                outputStream.flush();
+
+                // 5、接收信息
+                byte[] buf = new byte[1024];
+                int len = inputStream.read(buf);
+                String receData = new String(buf, 0, len, Charset.forName("UTF-8"));
+                logD(receData);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                logD(e.toString());
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                        socket = null;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }).start();
+}
+
+####################UDP Server####################
+
+private boolean mIsServerOn;
+private void turnOnUdpServer() {
+  final int port = 8000;
+
+  new Thread(){
+      @Override
+      public void run() {
+          super.run();
+          DatagramSocket socket = null;
+          try {
+              // 1、创建套接字
+              socket = new DatagramSocket(port);
+
+              // 2、创建数据报
+              byte[] data = new byte[1024];
+              DatagramPacket packet = new DatagramPacket(data, data.length);
+
+              // 3、一直监听端口，接收数据包
+              mIsServerOn = true;
+              while (mIsServerOn) {
+                  socket.receive(packet);
+                  String rece = new String(data, 0, packet.getLength(), Charset.forName("UTF-8"));
+                  pushMsgToMain(rece); // 推送信息到主线程
+              }
+          } catch (IOException e) {
+              e.printStackTrace();
+          } finally {
+              if (null != socket) {
+                  socket.close();
+                  socket = null;
+              }
+          }
+      }
+  }.start();
+}
+
+####################UDP Client####################
+
+private void turnOnUdpClient() {
+    final String hostIP = "192.168.1.145";
+    final int port = 8000;
+
+    new Thread(new Runnable() {
+        @Override
+        public void run() {
+            DatagramSocket socket = null;
+            try {
+                // 1、创建套接字
+                socket = new DatagramSocket(8888);
+
+                // 2、创建host的地址包装实例
+                SocketAddress socketAddr = new InetSocketAddress(hostIP, port);
+
+                // 3、创建数据报。包含要发送的数据、与目标主机地址
+                byte[] data = "Hello, I am Client".getBytes(Charset.forName("UTF-8"));
+                DatagramPacket packet = new DatagramPacket(data, data.length, socketAddr);
+
+                // 4、发送数据
+                socket.send(packet);
+
+                // 再次发送数据
+                packet.setData("Second information from client".getBytes(Charset.forName("UTF-8")));
+                socket.send(packet);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (null != socket) {
+                    socket.close();
+                }
+            }
+        }
+    }).start();
+}
