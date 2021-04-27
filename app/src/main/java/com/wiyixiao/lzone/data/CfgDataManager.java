@@ -31,10 +31,11 @@ public class CfgDataManager {
     private static final String SK_DISPLAY_TIME     = "display_time";
     private static final String SK_AUTO_SEND        = "auto_send";
     private static final String SK_DISPLAY_TYPE     = "display_type";
+    private static final String SK_SEND_TYPE        = "send_type";
     private static final String SK_STOP_CHAR_TYPE   = "stop_char_type";
     private static final String SK_STOP_CHAR_VAL    = "stop_char_val";
 
-    //sSPITEM_VAL
+    //SPITEM_VAL
     public String sv_company            = "wiyixiao";
     public boolean sv_run_first         = true;
     public int sv_connect_type          = 0;
@@ -42,6 +43,7 @@ public class CfgDataManager {
     public boolean sv_display_time      = false;
     public boolean sv_auto_send         = false;
     public int sv_display_type          = 0;
+    public int sv_send_type             = 0;
     public int sv_stop_char_type        = 0;
     public String sv_stop_char_val      = "0D 0A";
 
@@ -78,6 +80,8 @@ public class CfgDataManager {
         sv_auto_send = (boolean)spHelper.get(SK_AUTO_SEND, VALUE_DEFAULT_BOOLEAN);
         //接收显示类型
         sv_display_type = (int)spHelper.get(SK_DISPLAY_TYPE, VALUE_DEFAULT_INT);
+        //命令行发送类型
+        sv_send_type = (int)spHelper.get(SK_SEND_TYPE, VALUE_DEFAULT_INT);
         //终止符类型
         sv_stop_char_type = (int)spHelper.get(SK_STOP_CHAR_TYPE, VALUE_DEFAULT_INT);
         //终止符十六进制字符串
@@ -111,6 +115,7 @@ public class CfgDataManager {
         builder.append(SK_DISPLAY_TIME).append(": ").append(sv_display_time).append("\n");
         builder.append(SK_AUTO_SEND).append(": ").append(sv_auto_send).append("\n");
         builder.append(SK_DISPLAY_TYPE).append(": ").append(sv_display_type).append("\n");
+        builder.append(SK_SEND_TYPE).append(": ").append(sv_send_type).append("\n");
         builder.append(SK_STOP_CHAR_TYPE).append(": ").append(sv_stop_char_type).append("\n");
         builder.append(SK_STOP_CHAR_VAL).append(": ").append(sv_stop_char_val).append("\n");
 
@@ -131,6 +136,7 @@ public class CfgDataManager {
         items.add(new SPHelper.SpItem(SK_DISPLAY_TIME, sv_display_time));
         items.add(new SPHelper.SpItem(SK_AUTO_SEND, sv_auto_send));
         items.add(new SPHelper.SpItem(SK_DISPLAY_TYPE, sv_display_type));
+        items.add(new SPHelper.SpItem(SK_SEND_TYPE, sv_send_type));
         items.add(new SPHelper.SpItem(SK_STOP_CHAR_TYPE, sv_stop_char_type));
         items.add(new SPHelper.SpItem(SK_STOP_CHAR_VAL, sv_stop_char_val));
     }

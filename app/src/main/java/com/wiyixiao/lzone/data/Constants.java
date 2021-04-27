@@ -19,6 +19,14 @@ public class Constants {
      * @Desc: Key
      * 0x20 ~ 0x39
      */
-    public static final int KEY_LONG_PRESS = 0x20;
+    public static final int KEY_LONG_PRESS  = 0x20;
+    public static final int KEY_CMD_AUTO    = 0x21;
+
+    /**
+     * @Desc: Net
+     * 0x40 ~ 0x49
+     */
+    public static final int NET_CONN_SUCCESS = 0x40;
+    public static final int NET_CONN_FAILED = 0x41;
 
 }

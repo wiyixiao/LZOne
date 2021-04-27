@@ -7,12 +7,15 @@
 	<string name="NAL_btn_save">保存</string>
 	<string name="NAL_btn_cancel">取消</string>
 	<string name="NAL_btn_del">删除</string>
+	<string name="NAL_menu_connect">连接</string>
+	<string name="NAL_menu_disconn">断开</string>
 	<string name="NAL_menu_add">添加</string>
 	<string name="NAL_menu_clear">清除</string>
 	<string name="NAL_menu_help">帮助</string>
 	<string name="NAL_menu_key">增加按键</string>
 	<string name="NAL_menu_key_clear">清除按键</string>
 	<string name="NAL_menu_key_set">配置按键</string>
+	<string name="NAL_menu_key_save">保存配置</string>
 	<string name="NAL_menu_set">设置参数</string>
 	<string name="NAL_device_added">设备已添加</string>
 	<string name="NAL_device_invalid">无效操作</string>

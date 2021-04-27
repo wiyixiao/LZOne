@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class KeyPadView extends LinearLayout {
@@ -97,6 +98,10 @@ public class KeyPadView extends LinearLayout {
 
             }
 
+            if(keyArrayList.size() > 0){
+                keyInitBtn.setVisibility(GONE);
+            }
+
             keysAdapter.notifyDataSetChanged();
             keyEditDialog.dismissDialog();
         }
@@ -108,12 +113,28 @@ public class KeyPadView extends LinearLayout {
                 keyArrayList.remove(bean);
                 keysAdapter.notifyDataSetChanged();
 
+                //更新数据库
+
                 keyEditDialog.dismissDialog();
+            }
+
+            if(keyArrayList.size() <= 0){
+                keyInitBtn.setVisibility(VISIBLE);
             }
         }
 
 
     };
+
+    @OnClick({R.id.key_init_btn})
+    public void onClick(View v){
+        int id = v.getId();
+        if(id == R.id.key_init_btn){
+            keysReset();
+            keysAdapter.notifyDataSetChanged();
+            keyInitBtn.setVisibility(GONE);
+        }
+    }
 
     public KeyPadView(Context context) {
         super(context);
@@ -150,6 +171,8 @@ public class KeyPadView extends LinearLayout {
 
             //根据IP，更新数据库
 
+            //显示初始化按钮
+            keyInitBtn.setVisibility(VISIBLE);
         }
     }
 
@@ -318,15 +341,9 @@ public class KeyPadView extends LinearLayout {
         keyArrayList = new ArrayList<KeyInfoBean>();
 
         //根据IP查询其对应的自定义按键数量，数量为0时显示恢复默认设置按钮
-        if(false){
-            keyInitBtn.setVisibility(View.VISIBLE);
-        }
-
-        for(int i=0;i<myApplication.keyDdefaultCount;i++){
-            KeyInfoBean bean = new KeyInfoBean();
-            bean.setName(String.format("前进%s", i));
-            bean.setIndex(i);
-            keyArrayList.add(bean);
+        int keyCount = 0;
+        if(keyCount == 0){
+            keysReset();
         }
 
         //初始化适配器
@@ -438,8 +455,17 @@ public class KeyPadView extends LinearLayout {
         });
     }
 
+    private void keysReset(){
+        for(int i=0;i<myApplication.keyDdefaultCount;i++){
+            KeyInfoBean bean = new KeyInfoBean();
+            bean.setName(String.format("前进%s", i));
+            bean.setIndex(i);
+            keyArrayList.add(bean);
+        }
 
-
+        //更新数据库
+        
+    }
 
 
 
