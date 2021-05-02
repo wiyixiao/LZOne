@@ -40,6 +40,8 @@ public class Vars {
     public interface StopCharVal{
         String RN = "0D0A";
         String N  = "0A";
+        byte[] RN_BYTE = {0x0D, 0x0A};
+        byte[] N_BYTE = {0x0A};
     }
 
 }

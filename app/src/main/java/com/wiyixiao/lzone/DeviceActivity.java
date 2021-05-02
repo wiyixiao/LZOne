@@ -30,11 +30,12 @@ import com.google.gson.Gson;
 import com.wiyixiao.lzone.adapter.DeviceAdapter;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.bean.SettingInfoBean;
-import com.wiyixiao.lzone.data.CfgDataManager;
+import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.db.DBManager;
-import com.wiyixiao.lzone.utils.DisplayUtils;
+import com.wiyixiao.lzone.utils.DisplayUtil;
+import com.wiyixiao.lzone.utils.NetUtil;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -60,7 +61,7 @@ public class DeviceActivity extends AppCompatActivity {
         Objects.requireNonNull(actionBar);
 
         //设置标题居中
-        DisplayUtils.setCenterTitleActionBar(actionBar,
+        DisplayUtil.setCenterTitleActionBar(actionBar,
                 this,
                 getResources().getString(R.string.NAL_app_name),
                 getResources().getDimensionPixelOffset(R.dimen.sp_22),
@@ -92,6 +93,8 @@ public class DeviceActivity extends AppCompatActivity {
 
         myApplication.dbManager.close();
         myApplication.dbManager = null;
+
+        LocalThreadPools.getInstance().close();
     }
 
     //TODO 状态栏按钮
@@ -236,8 +239,15 @@ public class DeviceActivity extends AppCompatActivity {
                 final int type = btn_tcp.isChecked() ? 0 : 1;
                 final boolean auto = checkBox_auto.isChecked();
 
+                //检测输入是否为空
                 if(TextUtils.isEmpty(ip) || TextUtils.isEmpty(port)){
-                    DisplayUtils.showMsg(mContext, getResources().getString(R.string.NAL_input_empty));
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_input_empty));
+                    return;
+                }
+
+                //检测IP地址格式是否正确
+                if(!NetUtil.isIp(ip)){
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_iperr));
                     return;
                 }
 
@@ -262,7 +272,7 @@ public class DeviceActivity extends AppCompatActivity {
                     deviceArrayList.add(tempBean);
                 }else if(index < 0){
                     //设备已添加，无需更新配置
-                    DisplayUtils.showMsg(mContext, getResources().getString(R.string.NAL_device_added));
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_added));
                     return;
                 }
 
@@ -288,7 +298,7 @@ public class DeviceActivity extends AppCompatActivity {
                     //取消关闭弹窗
                     saveDialog.dismiss();
                 }else{
-                    DisplayUtils.showMsg(mContext, getResources().getString(R.string.NAL_device_invalid));
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_invalid));
                 }
             }
         });
@@ -300,7 +310,7 @@ public class DeviceActivity extends AppCompatActivity {
             deviceArrayList.clear();
             deviceAdapter.notifyDataSetChanged();
         }else{
-            DisplayUtils.showMsg(mContext, getResources().getString(R.string.NAL_device_zero));
+            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_zero));
             return;
         }
 

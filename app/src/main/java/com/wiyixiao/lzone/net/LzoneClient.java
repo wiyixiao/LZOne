@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
+import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.core.PriorityExecutor;
 import com.wiyixiao.lzone.core.PriorityRunnable;
 import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
+import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IClientListener;
+import com.wiyixiao.lzone.utils.DataTransform;
+import com.wiyixiao.lzone.utils.ModBusData;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +47,7 @@ public class LzoneClient {
     private static final int timeOut = 8000;
 
     private Context mContext;
+    private MyApplication myApplication;
 
     private String mIp;
     private String mPort;
@@ -52,11 +59,6 @@ public class LzoneClient {
     private IClientListener iClientListener;
 
     private ConnDialog mConnDialog;
-
-    /**
-     * @Desc: 线程池
-     */
-    private ExecutorService executorService = new PriorityExecutor(5, false);
 
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -101,7 +103,8 @@ public class LzoneClient {
     /***********************************Public***********************************/
     public LzoneClient(Context context) {
         this.mContext = context;
-        mConnDialog = new ConnDialog(context, "连接中...");
+        this.myApplication = (MyApplication)context.getApplicationContext();
+        mConnDialog = new ConnDialog(context, mContext.getResources().getString(R.string.NAL_conn_ing));
     }
 
     public void connect(String ip, String port){
@@ -148,7 +151,7 @@ public class LzoneClient {
         });
 
         //尝试连接
-        executorService.execute(connRunnable);
+        LocalThreadPools.getInstance().getExecutorService().execute(connRunnable);
     }
 
     /**
@@ -163,9 +166,6 @@ public class LzoneClient {
                 mOs.close();
                 mIs.close();
                 mSocket.close();
-
-                iClientListener.disConn();
-                System.out.println("Lzone client close!");
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -174,29 +174,46 @@ public class LzoneClient {
             mIs = null;
             mSocket = null;
 
-            if(exit){
-                executorService.shutdown();
-            }
+            iClientListener.disConn();
+            System.out.println("Lzone client close!");
+
+            if(exit){}
         }
 
     }
 
-    public void write(String str){
+    public void writeStr(String str, int endType){
         try {
-
-            if(mSocket == null || !mSocket.isConnected()){
-                iClientListener.connNo();
-                return;
-            }
-
             byte[] data = str.getBytes(StandardCharsets.UTF_8);
-            write(data);
+            writeBytes(data, endType);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void write(byte[] bytes){
+    public void writeBytes(byte[] hexs, int endType){
+        try{
+            if(mSocket == null || !mSocket.isConnected()){
+                iClientListener.connNo();
+                return;
+            }
+
+            if(hexs == null){
+                return;
+            }
+
+            byte[] res = joinData(hexs, endType);
+
+            if(res != null){
+                write(res);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /***********************************Private**********************************/
+    private void write(byte[] bytes){
         PriorityRunnable sendRunnable = new PriorityRunnable(PriorityType.HIGH, new Runnable() {
             @Override
             public void run() {
@@ -209,12 +226,45 @@ public class LzoneClient {
             }
         });
 
-        executorService.execute(sendRunnable);
+        LocalThreadPools.getInstance().getExecutorService().execute(sendRunnable);
     }
 
+    private byte[] joinData(byte[] data, int endFlag){
+        byte[] res = null;
+        //拷贝终止符
+        switch (endFlag){
+            case Vars.StopCharType.RN:
+                //0D0A
+                res = new byte[data.length + 2];
+                System.arraycopy(Vars.StopCharVal.RN_BYTE, 0, res, data.length, 2);
+                break;
+            case Vars.StopCharType.N:
+                //0A
+                res = new byte[data.length + 1];
+                System.arraycopy(Vars.StopCharVal.N_BYTE, 0, res, data.length, 1);
+                break;
+            case Vars.StopCharType.CUSTOM:
+                //Other//Customize
+                if(TextUtils.isEmpty(myApplication.cfg.sv_stop_char_val)){
+                    res = new byte[data.length];
+                }else{
+                    final String endStr = DataTransform.checkHexLength(myApplication.cfg.sv_stop_char_val);
+                    byte[] endHex = DataTransform.hexTobytes(endStr);
+                    if (endHex==null) throw new AssertionError("Object cannot be null");
+                    res = new byte[data.length + endHex.length];
+                    System.arraycopy(endHex, 0, res, data.length, endHex.length);
+                }
+                break;
+            default:
+                break;
+        }
 
-    /***********************************Private**********************************/
+        if(res != null){
+            System.arraycopy(data, 0, res, 0, data.length);
+        }
 
+        return res;
+    }
 
 
     /***********************************Dialog***********************************/

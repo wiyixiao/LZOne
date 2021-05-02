@@ -13,7 +13,7 @@
             android:id="@+id/ascii_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_10"
             android:text="@string/NAL_setting_ascii"
             android:textSize="@dimen/sp_12"
             android:checked="true"/>

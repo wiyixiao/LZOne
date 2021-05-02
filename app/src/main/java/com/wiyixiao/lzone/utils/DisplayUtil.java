@@ -21,7 +21,7 @@ import java.io.IOException;
  * Time:2021/3/4 17:46
  * Description:This is DisplayUtils
  */
-public class DisplayUtils {
+public class DisplayUtil {
 
     /**
      * @Desc: 设置ActionBar标题居中

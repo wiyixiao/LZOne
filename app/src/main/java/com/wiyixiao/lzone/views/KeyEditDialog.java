@@ -13,7 +13,7 @@ import android.widget.RadioButton;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.interfaces.IKeyEditListener;
-import com.wiyixiao.lzone.utils.DisplayUtils;
+import com.wiyixiao.lzone.utils.DisplayUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -120,7 +120,7 @@ public class KeyEditDialog {
                 final String name = keyNameEdit.getText().toString();
 
                 if(TextUtils.isEmpty(name)){
-                    DisplayUtils.showMsg(mContext, mContext.getResources().getString(R.string.NAL_input_empty));
+                    DisplayUtil.showMsg(mContext, mContext.getResources().getString(R.string.NAL_input_empty));
                     return;
                 }
 

@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
-import com.wiyixiao.lzone.utils.PackageUtils;
+import com.wiyixiao.lzone.utils.PackageUtil;
 
 import org.json.JSONObject;
 
@@ -52,7 +52,7 @@ public class ApplaicationBase extends Application {
 
         Log.d(TAG, "xCrash SDK init: start");
 
-        final String version = PackageUtils.getAppName(base) + "_" + PackageUtils.getVersionName(base) + "_" + PackageUtils.getVersionCode(base);
+        final String version = PackageUtil.getAppName(base) + "_" + PackageUtil.getVersionName(base) + "_" + PackageUtil.getVersionCode(base);
 //        final String crashDir = FileUtil.getStoragePath(base, false) + logDir;
         //LogDir:/storage/emulated/0/Android/data/com.linkzill.BTtest.debug/files/xcrash
 

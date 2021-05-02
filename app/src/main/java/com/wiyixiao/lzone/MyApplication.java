@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 
 import com.wiyixiao.lzone.base.ApplaicationBase;
 import com.wiyixiao.lzone.bean.SettingInfoBean;
+import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.data.CfgDataManager;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.db.DBManager;
@@ -55,6 +56,8 @@ public class MyApplication extends ApplaicationBase {
     public void onCreate() {
         super.onCreate();
 
+        //初始化线程池
+        LocalThreadPools.getInstance().init(this);
     }
 
 

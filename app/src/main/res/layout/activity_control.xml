@@ -58,7 +58,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/dp_10"
                 android:src="@android:drawable/ic_menu_send"
-                android:background="?android:attr/selectableItemBackground"/>
+                android:background="?android:attr/selectableItemBackground" />
 
             <ImageButton
                 android:id="@+id/clear_btn"

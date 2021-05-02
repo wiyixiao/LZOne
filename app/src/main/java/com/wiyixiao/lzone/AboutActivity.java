@@ -1,19 +1,14 @@
 package com.wiyixiao.lzone;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.wiyixiao.lzone.data.Vars;
-import com.wiyixiao.lzone.utils.DisplayUtils;
-import com.wiyixiao.lzone.utils.PackageUtils;
+import com.wiyixiao.lzone.utils.DisplayUtil;
+import com.wiyixiao.lzone.utils.PackageUtil;
 
 import java.util.Objects;
 
@@ -21,7 +16,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class AboutActivity extends AppCompatActivity {
@@ -41,7 +35,7 @@ public class AboutActivity extends AppCompatActivity {
         ActionBar actionBar = this.getSupportActionBar();
         Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);
         //设置标题居中
-        DisplayUtils.setCenterTitleActionBar(actionBar,
+        DisplayUtil.setCenterTitleActionBar(actionBar,
                                     this,
                                             getResources().getString(R.string.NAL_app_about),
                                             getResources().getDimensionPixelOffset(R.dimen.sp_22),
@@ -56,7 +50,7 @@ public class AboutActivity extends AppCompatActivity {
         //设置App版本
         Typeface tfRegular = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
         versionInfoTv.setTypeface(tfRegular);
-        versionInfoTv.setText(String.format("V%s", PackageUtils.getVersionName(this)));
+        versionInfoTv.setText(String.format("V%s", PackageUtil.getVersionName(this)));
     }
 
     @Override

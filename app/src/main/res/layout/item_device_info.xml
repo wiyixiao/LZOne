@@ -75,6 +75,10 @@
             android:minWidth="@dimen/dp_150"
             android:text="192.168.4.1"
             android:textSize="@dimen/sp_14"
+            android:inputType="text"
+            android:lines="1"
+            android:digits="@string/NAL_rul_ip"
+            android:maxLength="15"
             android:gravity="center"/>
 
     </LinearLayout>
@@ -99,8 +103,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="@dimen/dp_150"
-            android:text="80"
+            android:text="8080"
             android:textSize="@dimen/sp_14"
+            android:inputType="text"
+            android:lines="1"
+            android:digits="@string/NAL_rule_number"
+            android:maxLength="5"
             android:gravity="center"/>
 
     </LinearLayout>

@@ -55,6 +55,14 @@ public class SettingInfoBean {
         this.auto = auto;
     }
 
+    public boolean isShow_time_rev() {
+        return show_time_rev;
+    }
+
+    public void setShow_time_rev(boolean show_time_rev) {
+        this.show_time_rev = show_time_rev;
+    }
+
     /**
      * @Desc: 连接类型，与设备信息相关
      */
@@ -83,6 +91,12 @@ public class SettingInfoBean {
      * true | false
      */
     private boolean show_time;
+
+    /**
+     * @Desc: 是否显示接收时间
+     * true | false
+     */
+    private boolean show_time_rev;
 
     /**
      * @Desc: 结尾符

@@ -13,9 +13,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/dp_45"
+        android:minHeight="@dimen/dp_30"
         android:orientation="horizontal"
-        android:padding="@dimen/dp_5"
+        android:paddingStart="@dimen/dp_5"
+        android:paddingEnd="@dimen/dp_5"
         android:gravity="center_vertical">
 
         <ImageView
@@ -58,12 +59,13 @@
         android:padding="@dimen/dp_5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="连接设置"
+            android:text="@string/NAL_setting_conn"
             android:textSize="@dimen/sp_14"/>
 
         <RadioGroup
@@ -99,34 +101,35 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="发送设置"
+            android:text="@string/NAL_setting_send"
             android:textSize="@dimen/sp_14"/>
 
         <LinearLayout
             android:padding="@dimen/dp_5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
             <CheckBox
                 android:id="@+id/cb_show_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_5"
-                android:text="显示发送"/>
+                android:text="@string/NAL_setting_send_show"/>
 
             <CheckBox
                 android:id="@+id/cb_show_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_5"
-                android:text="显示发送时间"/>
+                android:text="@string/NAL_setting_send_time"/>
 
             <CheckBox
                 android:id="@+id/cb_auto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="定时发送(200ms)"/>
+                android:text="@string/NAL_setting_send_autot"/>
 
         </LinearLayout>
 
@@ -141,30 +144,46 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="接收显示模式"
+            android:text="@string/NAL_setting_rev"
             android:textSize="@dimen/sp_14"/>
 
-        <RadioGroup
+        <LinearLayout
             android:padding="@dimen/dp_5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <RadioButton
-                android:id="@+id/ascii_rbtn"
+            <CheckBox
+                android:id="@+id/cbrev_show_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:text="@string/NAL_setting_ascii"
-                android:checked="true"/>
+                android:layout_marginEnd="@dimen/dp_5"
+                android:text="@string/NAL_setting_send_time"/>
 
-            <RadioButton
-                android:id="@+id/hex_rbtn"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:padding="@dimen/dp_5"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/NAL_setting_hex"/>
+                android:orientation="horizontal">
 
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/ascii_rbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:text="@string/NAL_setting_ascii"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:id="@+id/hex_rbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/NAL_setting_hex"/>
+
+            </RadioGroup>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -177,7 +196,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="终止符设置"
+            android:text="@string/NAL_setting_endflag"
             android:textSize="@dimen/sp_14"/>
 
         <LinearLayout
@@ -185,6 +204,7 @@
             android:layout_height="wrap_content"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
             android:orientation="vertical">
 
             <RadioGroup
@@ -198,7 +218,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_5"
-                    android:text="char('\\r\\n')"
+                    android:text="@string/NAL_setting_end_rn"
                     android:checked="true"/>
 
                 <RadioButton
@@ -206,13 +226,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_5"
-                    android:text="char('\\n')"/>
+                    android:text="@string/NAL_setting_end_n"/>
 
                 <RadioButton
                     android:id="@+id/not_rn_rbtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="其他"/>
+                    android:text="@string/NAL_setting_end_other"/>
 
             </RadioGroup>
 
@@ -230,7 +250,7 @@
                     android:lines="1"
                     android:gravity="center_vertical"
                     android:paddingStart="@dimen/dp_10"
-                    android:digits="@string/NAL_rule_stopval"
+                    android:digits="@string/NAL_rule_hexval"
                     android:textColor="@color/colorBlack333333"
                     tools:ignore="RtlSymmetry" />
 

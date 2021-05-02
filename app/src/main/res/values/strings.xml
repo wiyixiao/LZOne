@@ -10,14 +10,15 @@
     <!--ActionBar-->
     <string name="NAL_menu_connect">连接</string>
     <string name="NAL_menu_disconn">断开</string>
-    <string name="NAL_menu_add">添加</string>
-    <string name="NAL_menu_clear">清除</string>
+    <string name="NAL_menu_add">添加设备</string>
+    <string name="NAL_menu_clear">清除设备</string>
     <string name="NAL_menu_help">帮助</string>
     <string name="NAL_menu_key">增加按键</string>
     <string name="NAL_menu_key_clear">清除按键</string>
     <string name="NAL_menu_key_set">配置按键</string>
     <string name="NAL_menu_key_save">保存配置</string>
     <string name="NAL_menu_set">设置参数</string>
+    <string name="NAL_menu_save">保存文件</string>
 
     <string name="NAL_device_added">设备已添加</string>
     <string name="NAL_device_invalid">无效操作</string>
@@ -29,15 +30,45 @@
     <string name="NAL_key_cfg">按键配置</string>
     <string name="NAL_device_tcp">TCP</string>
     <string name="NAL_device_udp">UDP</string>
+    <string name="NAL_device_iperr">IP地址格式错误</string>
 
     <string name="NAL_setting_txt">设置</string>
     <string name="NAL_setting_ascii">ASCII</string>
     <string name="NAL_setting_hex">HEX</string>
+    <string name="NAL_setting_conn">连接设置</string>
+    <string name="NAL_setting_send">发送设置</string>
+    <string name="NAL_setting_send_show">显示发送</string>
+    <string name="NAL_setting_send_time">显示时间</string>
+    <string name="NAL_setting_send_autot">定时时间(200ms)</string>
+    <string name="NAL_setting_rev">接收显示设置</string>
+    <string name="NAL_setting_rev_time">显示时间</string>
+    <string name="NAL_setting_endflag">终止符设置</string>
+    <string name="NAL_setting_end_rn">char(\'\r\\n\')</string>
+    <string name="NAL_setting_end_n">char(\'\\n\')</string>
+    <string name="NAL_setting_end_other">Other</string>
 
     <string name="NAL_key_init">恢复默认</string>
+    <string name="NAL_key_name">按键名:&#160;</string>
+    <string name="NAL_key_down">短按发送:&#160;</string>
+    <string name="NAL_key_hold">长按发送:&#160;</string>
+    <string name="NAL_key_up">释放发送:&#160;</string>
+    <string name="NAL_key_autot">定时时间:&#160;</string>
+    <string name="NAL_key_cfgmode">进入按键配置模式</string>
+    <string name="NAL_key_runmode">退出按键配置模式</string>
+
+    <string name="NAL_conn_ing">连接中…</string>
+    <string name="NAL_conn_success">连接成功</string>
+    <string name="NAL_conn_failed">连接失败</string>
+    <string name="NAL_conn_discon">连接断开</string>
+    <string name="NAL_conn_no">请连接设备</string>
+
+    <string name="NAL_cmd_automode">命令行定时发送(200ms)</string>
+    <string name="NAL_cmd_pressmode">退出定时发送</string>
 
 <!--    rules-->
-    <string name="NAL_rule_stopval">0123456789ABCDEF</string>
+    <string name="NAL_rule_number">0123456789</string>
+    <string name="NAL_rule_hexval">0123456789ABCDEF</string>
+    <string name="NAL_rul_ip">.0123456789</string>
 
 
 </resources>

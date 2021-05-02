@@ -11,25 +11,29 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.text.InputFilter;
+import android.text.method.DigitsKeyListener;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RadioButton;
 
 import com.google.gson.Gson;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
-import com.wiyixiao.lzone.bean.MsgBean;
+import com.wiyixiao.lzone.core.LocalThreadPools;
+import com.wiyixiao.lzone.core.PriorityRunnable;
+import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
+import com.wiyixiao.lzone.data.LzoneInputFilter;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IClientListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 import com.wiyixiao.lzone.net.LzoneClient;
-import com.wiyixiao.lzone.utils.DisplayUtils;
+import com.wiyixiao.lzone.utils.DataTransform;
+import com.wiyixiao.lzone.utils.DisplayUtil;
 import com.wiyixiao.lzone.views.KeyPadView;
 import com.wiyixiao.lzone.views.MsgView;
 import com.wiyixiao.lzone.views.SettingView;
@@ -69,7 +73,6 @@ public class ControlActivity extends AppCompatActivity {
     private DeviceInfoBean deviceInfoBean;
 
     //命令行模式定时发送开启标志
-    private Thread autoSendThread = null;
     private boolean autoSendFlag = false;
     private final int autoSendTime = 200;
 
@@ -80,6 +83,14 @@ public class ControlActivity extends AppCompatActivity {
     //连接客户端
     private LzoneClient lzoneClient;
 
+    //过滤器
+    private InputFilter[] cmdAsciiFilter = null;
+    private InputFilter[] cmdHexFilter = null;
+
+    //记录上一次命令行值，避免每次发送重复检测有效字符
+    private String lastHexCmd = "";
+    private byte[] hexCmd = null;
+
     /**
      * @Desc: 按键回调
      */
@@ -87,32 +98,17 @@ public class ControlActivity extends AppCompatActivity {
 
         @Override
         public void short_press(String data) {
-            if(BuildConfig.DEBUG){
-                System.out.println("***************************************");
-                System.out.println(data);
-            }
-
-            msgView.add(data, Vars.MsgType.SEND);
+            keySendData(data);
         }
 
         @Override
         public void long_press(String data) {
-            if(BuildConfig.DEBUG){
-                System.out.println("***************************************");
-                System.out.println(data);
-            }
-
-            msgView.add(data, Vars.MsgType.SEND);
+            keySendData(data);
         }
 
         @Override
         public void release_press(String data) {
-            if(BuildConfig.DEBUG){
-                System.out.println("***************************************");
-                System.out.println(data);
-            }
-
-            msgView.add(data, Vars.MsgType.SEND);
+            keySendData(data);
         }
     };
 
@@ -122,23 +118,23 @@ public class ControlActivity extends AppCompatActivity {
     private IClientListener mClientListener = new IClientListener() {
         @Override
         public void connSuccess() {
-            DisplayUtils.showMsg(mContext, "连接成功");
+            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_success));
             connItem.setTitle(getResources().getString(R.string.NAL_menu_disconn));
         }
 
         @Override
         public void connFailed() {
-            DisplayUtils.showMsg(mContext, "连接失败");
+            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_failed));
         }
 
         @Override
         public void connNo() {
-            DisplayUtils.showMsg(mContext, "请连接设备");
+            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_no));
         }
 
         @Override
         public void disConn() {
-            DisplayUtils.showMsg(mContext, "连接断开");
+            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_discon));
             connItem.setTitle(getResources().getString(R.string.NAL_menu_connect));
         }
     };
@@ -153,9 +149,18 @@ public class ControlActivity extends AppCompatActivity {
                     String cmd = msgEdit.getText().toString();
                     if(asciiBtn.isChecked()){
                         //发送字符串
-                        lzoneClient.write(cmd);
+                        lzoneClient.writeStr(cmd, myApplication.cfg.sv_stop_char_type);
                     }else{
                         //发送hex
+                        //检测有效字符
+                        if(!lastHexCmd.equals(cmd)){
+                            if(BuildConfig.DEBUG) System.out.println("**********Hex cmd set**********");
+                            cmd = DataTransform.checkHexLength(cmd);
+                            msgEdit.setText(cmd);
+                            hexCmd = DataTransform.hexTobytes(cmd);
+                            lastHexCmd = cmd;
+                        }
+                        lzoneClient.writeBytes(hexCmd, myApplication.cfg.sv_stop_char_type);
                     }
 
                     if(lzoneClient.isConn()){
@@ -190,7 +195,7 @@ public class ControlActivity extends AppCompatActivity {
         ActionBar actionBar = this.getSupportActionBar();
         Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);
         //设置标题居中
-        DisplayUtils.setCenterTitleActionBar(actionBar,
+        DisplayUtil.setCenterTitleActionBar(actionBar,
                 this,
                 String.format("%s:%s",deviceInfoBean.getDevice_ip(), deviceInfoBean.getDevice_port()),
                 getResources().getDimensionPixelOffset(R.dimen.sp_22),
@@ -204,15 +209,21 @@ public class ControlActivity extends AppCompatActivity {
         lzoneClient = new LzoneClient(this);
         lzoneClient.setiClientListener(mClientListener);
 
-        //加载命令行发送类型
+        //初始化过滤器
+        initEditCmdFilter();
+
+        //加载命令行发送类型,设置初始过滤器
         if(myApplication.cfg.sv_send_type == 0){
             asciiBtn.setChecked(true);
+            msgEdit.setFilters(cmdAsciiFilter);
         }else{
             hexBtn.setChecked(true);
+            msgEdit.setFilters(cmdHexFilter);
         }
 
-        //初始化命令行定时发送线程
+        //初始化自动发送线程
         initCmdSendThread();
+
     }
 
     @Override
@@ -220,14 +231,6 @@ public class ControlActivity extends AppCompatActivity {
         super.onDestroy();
 
         exitFlag = true;
-
-        //保存配置
-        myApplication.cfg.cfgWrite();
-
-        keyPadView.close();
-        msgView.close();
-        settingView.close();
-        lzoneClient.close(true);
 
         unbinder.unbind();
     }
@@ -264,12 +267,12 @@ public class ControlActivity extends AppCompatActivity {
                 break;
             case R.id.item_key_set:
                 if(!keyPadView.isCfgMode()){
-                    DisplayUtils.showMsg(mContext, "进入按键配置模式");
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_key_cfgmode));
                     keyPadView.setCfgMode(true);
                     keyCfgItem.setTitle(R.string.NAL_menu_key_save);
 
                 }else{
-                    DisplayUtils.showMsg(mContext, "退出按键配置模式");
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_key_runmode));
                     keyPadView.setCfgMode(false);
                     keyCfgItem.setTitle(R.string.NAL_menu_key_set);
                 }
@@ -277,6 +280,9 @@ public class ControlActivity extends AppCompatActivity {
             case R.id.item_set:
                 //显示设置弹窗
                 settingView.showDialog(deviceInfoBean);
+                break;
+            case R.id.item_save:
+                DisplayUtil.showMsg(mContext, "保存到文件");
                 break;
             default:
                 break;
@@ -298,22 +304,26 @@ public class ControlActivity extends AppCompatActivity {
         int id = v.getId();
         switch (id){
             case R.id.ascii_btn:
+                msgEdit.setText("");
                 myApplication.cfg.sv_send_type = 0;
+                msgEdit.setFilters(cmdAsciiFilter);
                 break;
             case R.id.hex_btn:
+                msgEdit.setText("");
                 myApplication.cfg.sv_send_type = 1;
+                msgEdit.setFilters(cmdHexFilter);
                 break;
             case R.id.send_btn:
-                if(deviceInfoBean.isAuto()){
+                if(deviceInfoBean.isAuto() && lzoneClient.isConn()){
                     if(!autoSendFlag){
                         //定时发送线程
                         autoSendFlag = true;
-                        DisplayUtils.showMsg(mContext, "定时发送(200ms)");
+                        DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_cmd_automode));
 
                     }else{
                         //清除定时发送标志位
                         autoSendFlag = false;
-                        DisplayUtils.showMsg(mContext, "退出定时发送");
+                        DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_cmd_pressmode));
 
                     }
                 }else{
@@ -349,11 +359,20 @@ public class ControlActivity extends AppCompatActivity {
         // 设置返回值并结束程序
         setResult(Activity.RESULT_OK, intent);
 
+        //保存配置
+        myApplication.cfg.cfgWrite();
+
+        keyPadView.close();
+        msgView.close();
+        settingView.close();
+        lzoneClient.close(true);
+
         finish();
     }
 
     private void initCmdSendThread(){
-        autoSendThread = new Thread(new Runnable() {
+
+        PriorityRunnable autoSendRunnable = new PriorityRunnable(PriorityType.NORMAL, new Runnable() {
             @Override
             public void run() {
                 while (!exitFlag){
@@ -373,12 +392,24 @@ public class ControlActivity extends AppCompatActivity {
                 System.out.println("CmdSendThread Exit!");
             }
         });
-        autoSendThread.setName("CmdSendThread");
-        autoSendThread.start();
+
+        LocalThreadPools.getInstance().getExecutorService().execute(autoSendRunnable);
+    }
+
+    private void initEditCmdFilter(){
+        cmdAsciiFilter = new InputFilter[]{};
+        cmdHexFilter = new InputFilter[]{
+                new LzoneInputFilter(getResources().getString(R.string.NAL_rule_hexval))
+        };
     }
 
 
-
+    private void keySendData(String cmd){
+        lzoneClient.writeStr(cmd, myApplication.cfg.sv_stop_char_type);
+        if(lzoneClient.isConn()){
+            msgView.add(cmd, Vars.MsgType.SEND);
+        }
+    }
 
 
 

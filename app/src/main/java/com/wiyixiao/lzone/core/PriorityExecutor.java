@@ -44,7 +44,7 @@ public class PriorityExecutor extends ThreadPoolExecutor {
 
         @Override
         public Thread newThread(Runnable runnable) {
-            return new Thread(runnable, "download#" + mCount.getAndIncrement());
+            return new Thread(runnable, "LzoneApp#" + mCount.getAndIncrement());
         }
     };
 

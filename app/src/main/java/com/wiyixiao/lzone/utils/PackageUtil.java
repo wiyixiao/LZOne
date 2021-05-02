@@ -8,7 +8,7 @@ import android.content.pm.PackageManager;
 /**
  * @author Think
  */
-public class PackageUtils {
+public class PackageUtil {
 
     /**
      * 获取版本名称

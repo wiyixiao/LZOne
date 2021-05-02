@@ -3,6 +3,8 @@ package com.wiyixiao.lzone.views;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.data.Vars;
+import com.wiyixiao.lzone.utils.DataTransform;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +57,8 @@ public class SettingView {
     RadioButton notRnRbtn;
     @BindView(R.id.edit_hex_rn)
     EditText editHexRn;
+    @BindView(R.id.cbrev_show_time)
+    CheckBox cbrevShowTime;
     private View mView;
     private Context mContext;
     private Dialog mDialog;
@@ -65,6 +70,23 @@ public class SettingView {
     private Unbinder unbinder;
 
     private DeviceInfoBean deviceBean;
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     private SettingView(Context context) {
         this.mContext = context;
@@ -114,9 +136,9 @@ public class SettingView {
 
     /************************************Click************************************/
     @OnClick({R.id.rn_rbtn, R.id.n_rbtn, R.id.not_rn_rbtn})
-    public void onClick(View v){
+    public void onClick(View v) {
         int id = v.getId();
-        switch (id){
+        switch (id) {
             case R.id.rn_rbtn:
                 editHexRn.setText(Vars.StopCharVal.RN);
                 break;
@@ -140,23 +162,25 @@ public class SettingView {
             }
         });
 
-        mDialog.findViewById(R.id.saveTV).setOnClickListener(new View.OnClickListener() {
+        saveTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dismissDialog();
             }
         });
 
+        editHexRn.addTextChangedListener(textWatcher);
+
     }
 
     private void initDisplay() {
-        if(null == deviceBean){
+        if (null == deviceBean) {
             return;
         }
 
-        if(deviceBean.getDevice_type() == 0){
+        if (deviceBean.getDevice_type() == 0) {
             tcpRbtn.setChecked(true);
-        }else{
+        } else {
             udpRbtn.setChecked(true);
         }
 
@@ -166,14 +190,15 @@ public class SettingView {
         {
             cbShowSend.setChecked(myApplication.cfg.sv_display_send);
             cbShowTime.setChecked(myApplication.cfg.sv_display_time);
+            cbrevShowTime.setChecked(myApplication.cfg.sv_display_rev_time);
 
-            if(myApplication.cfg.sv_display_type == 0){
+            if (myApplication.cfg.sv_display_type == 0) {
                 asciiRbtn.setChecked(true);
-            }else{
+            } else {
                 hexRbtn.setChecked(true);
             }
 
-            switch (myApplication.cfg.sv_stop_char_type){
+            switch (myApplication.cfg.sv_stop_char_type) {
                 case Vars.StopCharType.RN:
                     rnRbtn.setChecked(true);
                     break;
@@ -192,16 +217,21 @@ public class SettingView {
 
     }
 
-    private void saveSetting(){
+    private void saveSetting() {
         deviceBean.setDevice_type(tcpRbtn.isChecked() ? 0 : 1);
         deviceBean.setAuto(cbAuto.isChecked());
 
         //保存其他配置项到配置文件
         myApplication.cfg.sv_display_send = cbShowSend.isChecked();
         myApplication.cfg.sv_display_time = cbShowTime.isChecked();
+        myApplication.cfg.sv_display_rev_time = cbrevShowTime.isChecked();
         myApplication.cfg.sv_display_type = asciiRbtn.isChecked() ? 0 : 1;
+
         myApplication.cfg.sv_stop_char_type = (rnRbtn.isChecked() ? 0 : (nRbtn.isChecked() ? 1 : 2));
-        myApplication.cfg.sv_stop_char_val = editHexRn.getText().toString();
+
+        //检测终止符是否位偶数，不是偶数去除最后一位
+        final String str = editHexRn.getText().toString();
+        myApplication.cfg.sv_stop_char_val = DataTransform.checkHexLength(str);
 
         myApplication.cfg.cfgWrite();
     }

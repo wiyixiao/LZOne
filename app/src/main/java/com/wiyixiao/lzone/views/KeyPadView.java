@@ -20,6 +20,9 @@ import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.MyAdapter;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
+import com.wiyixiao.lzone.core.LocalThreadPools;
+import com.wiyixiao.lzone.core.PriorityRunnable;
+import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.interfaces.IKeyEditListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
@@ -82,27 +85,34 @@ public class KeyPadView extends LinearLayout {
         @Override
         public void add(KeyInfoBean bean) {
 
+            int keyCount = 0;
+            int index = 0;
+
             //非配置模式且不包含则添加、否则更新
             if(!cfgMode && !keyArrayList.contains(bean)){
                 //获取当前按键数量
-                int count = keyArrayList.size();
+                keyCount = keyArrayList.size();
+                index = keyCount;
 
                 //自增按键索引
-                bean.setIndex(count);
+                bean.setIndex(keyCount);
                 keyArrayList.add(bean);
 
                 //添加数据库
 
             }else{
+                index = keyArrayList.indexOf(bean);
                 //更新数据库
 
             }
 
-            if(keyArrayList.size() > 0){
+            keyCount = keyArrayList.size();
+
+            if(keyCount > 0){
                 keyInitBtn.setVisibility(GONE);
             }
 
-            keysAdapter.notifyDataSetChanged();
+            keysAdapter.notifyItemRangeChanged(index, 1);
             keyEditDialog.dismissDialog();
         }
 
@@ -217,23 +227,19 @@ public class KeyPadView extends LinearLayout {
 
     private static class KeyLongListener implements OnLongClickListener{
 
-        private Thread longWorkThread = null;
         private KeyInfoBean bean;
         private KeyPadView pad;
 
         private void work(){
-            if(null != longWorkThread){
-                return;
-            }
 
             pad.longPress = true; //默认开启长按线程
             if(BuildConfig.DEBUG){
-                System.out.println("********* key long press init **********");
+                System.out.println("**********key long press init**********");
             }
 
-            longWorkThread = new Thread(){
+            PriorityRunnable longPressRunnable = new PriorityRunnable(PriorityType.NORMAL, new Runnable() {
                 @Override
-                public void run(){
+                public void run() {
                     while (pad.longPress){
                         try {
 
@@ -259,10 +265,9 @@ public class KeyPadView extends LinearLayout {
                         System.out.println("KeyLongPressThread Exit!");
                     }
                 }
-            };
+            });
 
-            longWorkThread.setName("KeyLongPressThread");
-            longWorkThread.start();
+            LocalThreadPools.getInstance().getExecutorService().execute(longPressRunnable);
         }
 
         private KeyLongListener(KeyPadView pad){
@@ -276,7 +281,7 @@ public class KeyPadView extends LinearLayout {
             //配置模式 或者 长按模式已经触发 则不执行长按
             if(pad.cfgMode || pad.longPressFlag){
                 if(BuildConfig.DEBUG){
-                    System.out.println("********* key long pressing **********");
+                    System.out.println("**********key long pressing**********");
                 }
                 return false;
             }
@@ -458,7 +463,7 @@ public class KeyPadView extends LinearLayout {
     private void keysReset(){
         for(int i=0;i<myApplication.keyDdefaultCount;i++){
             KeyInfoBean bean = new KeyInfoBean();
-            bean.setName(String.format("前进%s", i));
+            bean.setName(String.format("Run%s", i));
             bean.setIndex(i);
             keyArrayList.add(bean);
         }

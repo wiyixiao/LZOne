@@ -24,11 +24,12 @@ public class CfgDataManager {
     private static final String CONFIG_NAME = "lzone_configuration";
 
     //SPITEM_KEY
-    private static final String SK_COMPANY          = "company";
+    private static final String SK_APP_AUTHOR       = "author";
     private static final String SK_RUN_FIRST        = "run_first";
     private static final String SK_CONNECT_TYPE     = "connect_type";
     private static final String SK_DISPLAY_SEND     = "display_send";
-    private static final String SK_DISPLAY_TIME     = "display_time";
+    private static final String SK_DISPLAY_TIME     = "display_time";       //send
+    private static final String SK_DISPLAY_REV_TIME = "display_rev_time";   //rev
     private static final String SK_AUTO_SEND        = "auto_send";
     private static final String SK_DISPLAY_TYPE     = "display_type";
     private static final String SK_SEND_TYPE        = "send_type";
@@ -36,11 +37,12 @@ public class CfgDataManager {
     private static final String SK_STOP_CHAR_VAL    = "stop_char_val";
 
     //SPITEM_VAL
-    public String sv_company            = "wiyixiao";
+    public String sv_app_author         = "wiyixiao";
     public boolean sv_run_first         = true;
     public int sv_connect_type          = 0;
     public boolean sv_display_send      = false;
     public boolean sv_display_time      = false;
+    public boolean sv_display_rev_time  = false;
     public boolean sv_auto_send         = false;
     public int sv_display_type          = 0;
     public int sv_send_type             = 0;
@@ -67,7 +69,7 @@ public class CfgDataManager {
 
     public void cfgRead(){
         //xxxx
-        sv_company = (String)spHelper.get(SK_COMPANY, VALUE_DEFAULT_STRING);
+        sv_app_author = (String)spHelper.get(SK_APP_AUTHOR, VALUE_DEFAULT_STRING);
         //首次安装
         sv_run_first = (boolean) spHelper.get(SK_RUN_FIRST, VALUE_DEFAULT_BOOLEAN);
         //连接类型
@@ -76,6 +78,8 @@ public class CfgDataManager {
         sv_display_send = (boolean)spHelper.get(SK_DISPLAY_SEND, VALUE_DEFAULT_BOOLEAN);
         //显示发送时间
         sv_display_time = (boolean)spHelper.get(SK_DISPLAY_TIME, VALUE_DEFAULT_BOOLEAN);
+        //显示接收时间
+        sv_display_rev_time = (boolean)spHelper.get(SK_DISPLAY_REV_TIME, VALUE_DEFAULT_BOOLEAN);
         //定时发送
         sv_auto_send = (boolean)spHelper.get(SK_AUTO_SEND, VALUE_DEFAULT_BOOLEAN);
         //接收显示类型
@@ -108,16 +112,18 @@ public class CfgDataManager {
         StringBuilder builder = new StringBuilder();
 
         builder.append("**********Lzone Config**********").append("\n");
-        builder.append(SK_COMPANY).append(": ").append(sv_company).append("\n");
+        builder.append(SK_APP_AUTHOR).append(": ").append(sv_app_author).append("\n");
         builder.append(SK_RUN_FIRST).append(": ").append(sv_run_first).append("\n");
         builder.append(SK_CONNECT_TYPE).append(": ").append(sv_connect_type).append("\n");
         builder.append(SK_DISPLAY_SEND).append(": ").append(sv_display_send).append("\n");
         builder.append(SK_DISPLAY_TIME).append(": ").append(sv_display_time).append("\n");
+        builder.append(SK_DISPLAY_REV_TIME).append(": ").append(sv_display_rev_time).append("\n");
         builder.append(SK_AUTO_SEND).append(": ").append(sv_auto_send).append("\n");
         builder.append(SK_DISPLAY_TYPE).append(": ").append(sv_display_type).append("\n");
         builder.append(SK_SEND_TYPE).append(": ").append(sv_send_type).append("\n");
         builder.append(SK_STOP_CHAR_TYPE).append(": ").append(sv_stop_char_type).append("\n");
         builder.append(SK_STOP_CHAR_VAL).append(": ").append(sv_stop_char_val).append("\n");
+        builder.append("**********Lzone Config**********").append("\n");
 
         System.out.println(builder.toString());
     }
@@ -129,11 +135,12 @@ public class CfgDataManager {
     }
 
     private void addData(){
-        items.add(new SPHelper.SpItem(SK_COMPANY, sv_company));
+        items.add(new SPHelper.SpItem(SK_APP_AUTHOR, sv_app_author));
         items.add(new SPHelper.SpItem(SK_RUN_FIRST, sv_run_first));
         items.add(new SPHelper.SpItem(SK_CONNECT_TYPE, sv_connect_type));
         items.add(new SPHelper.SpItem(SK_DISPLAY_SEND, sv_display_send));
         items.add(new SPHelper.SpItem(SK_DISPLAY_TIME, sv_display_time));
+        items.add(new SPHelper.SpItem(SK_DISPLAY_REV_TIME, sv_display_rev_time));
         items.add(new SPHelper.SpItem(SK_AUTO_SEND, sv_auto_send));
         items.add(new SPHelper.SpItem(SK_DISPLAY_TYPE, sv_display_type));
         items.add(new SPHelper.SpItem(SK_SEND_TYPE, sv_send_type));
