@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.wiyixiao.lzone.BuildConfig;
 import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.core.LocalThreadPools;
@@ -28,8 +29,11 @@ import com.wiyixiao.lzone.interfaces.IClientListener;
 import com.wiyixiao.lzone.utils.DataTransform;
 import com.wiyixiao.lzone.utils.ModBusData;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -44,13 +48,21 @@ import java.util.concurrent.ExecutorService;
  */
 public class LzoneClient {
 
-    private static final int timeOut = 8000;
+    private static final int TCP_TIME_OUT = 8000;
+    private static final int UDP_BUFF_SIZE = 1024;
 
     private Context mContext;
     private MyApplication myApplication;
 
     private String mIp;
     private String mPort;
+    private int mConnType;
+
+    private DatagramSocket mDSocket;
+    private DatagramPacket mDPacketSend;
+    private DatagramPacket mDPacketRev;
+    private byte[] packSend = new byte[UDP_BUFF_SIZE];
+    private byte[] packRev = new byte[UDP_BUFF_SIZE];
 
     private Socket mSocket;
     private OutputStream mOs;
@@ -67,9 +79,14 @@ public class LzoneClient {
             switch (msg.what){
                 case Constants.NET_CONN_SUCCESS:
                     iClientListener.connSuccess();
+                    runReceiveTask();
                     break;
                 case Constants.NET_CONN_FAILED:
                     iClientListener.connFailed();
+                    break;
+                case Constants.NET_DATA_REV:
+                    Bundle b = (Bundle) msg.obj;
+                    iClientListener.revCall(b.getByteArray("rev"));
                     break;
                 default:
                     break;
@@ -97,6 +114,10 @@ public class LzoneClient {
             return mSocket.isConnected();
         }
 
+        if(mDSocket != null){
+            return mDSocket.isBound();
+        }
+
         return false;
     }
 
@@ -107,9 +128,10 @@ public class LzoneClient {
         mConnDialog = new ConnDialog(context, mContext.getResources().getString(R.string.NAL_conn_ing));
     }
 
-    public void connect(String ip, String port){
+    public void connect(String ip, String port, int type){
         this.mIp = ip;
         this.mPort = port;
+        this.mConnType = type;
 
         //显示连接弹窗
         if(!mConnDialog.isShowing()){
@@ -120,32 +142,29 @@ public class LzoneClient {
             @Override
             public void run() {
                 mSocket = null;
-                Message msg = new Message();
+                mDSocket = null;
                 try{
-                    //创建socket连接
-                    mSocket = new Socket();
-                    SocketAddress socAddress = new InetSocketAddress(mIp, Integer.parseInt(mPort));
-                    mSocket.connect(socAddress, timeOut);
-                    if(mSocket.isConnected()){
-                        //设置读取超时时间
-                        mSocket.setSoTimeout(timeOut);
-
-                        //设置输入输出流
-                        mOs = mSocket.getOutputStream();
-                        mIs= mSocket.getInputStream();
-
-                        //连接成功
-                        msg.what = Constants.NET_CONN_SUCCESS;
+                    if(type == Vars.ConnType.TCP){
+                        connTcp();
+                    }else{
+                        connUdp();
                     }
 
-                    mConnDialog.dismiss();
-                    handler.sendMessage(msg);
+                    //连接成功
+                    Message msg = handler.obtainMessage();
+                    msg.what = Constants.NET_CONN_SUCCESS;
+                    msg.sendToTarget();
+
                 }catch (Exception e){
                     mSocket = null;
-                    mConnDialog.dismiss();
-                    msg.what = Constants.NET_CONN_FAILED;
-                    handler.sendMessage(msg);
+                    mDSocket = null;
                     e.printStackTrace();
+
+                    Message msg = handler.obtainMessage();
+                    msg.what = Constants.NET_CONN_FAILED;
+                    msg.sendToTarget();
+                }finally {
+                    mConnDialog.dismiss();
                 }
             }
         });
@@ -167,12 +186,20 @@ public class LzoneClient {
                 mIs.close();
                 mSocket.close();
             }
+
+            if(mDSocket != null && mDSocket.isBound()){
+                mDSocket.close();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
             mOs = null;
             mIs = null;
             mSocket = null;
+
+            mDPacketSend = null;
+            mDPacketRev = null;
+            mDSocket = null;
 
             iClientListener.disConn();
             System.out.println("Lzone client close!");
@@ -186,6 +213,7 @@ public class LzoneClient {
         try {
             byte[] data = str.getBytes(StandardCharsets.UTF_8);
             writeBytes(data, endType);
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -193,7 +221,8 @@ public class LzoneClient {
 
     public void writeBytes(byte[] hexs, int endType){
         try{
-            if(mSocket == null || !mSocket.isConnected()){
+
+            if(!isConn()){
                 iClientListener.connNo();
                 return;
             }
@@ -205,7 +234,11 @@ public class LzoneClient {
             byte[] res = joinData(hexs, endType);
 
             if(res != null){
-                write(res);
+                if(mConnType == Vars.ConnType.TCP){
+                    write(res);
+                }else{
+                    pack(res);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -227,6 +260,22 @@ public class LzoneClient {
         });
 
         LocalThreadPools.getInstance().getExecutorService().execute(sendRunnable);
+    }
+
+    private void pack(byte[] bytes){
+        PriorityRunnable packRunnable = new PriorityRunnable(PriorityType.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mDPacketSend.setData(bytes);
+                    mDSocket.send(mDPacketSend);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        LocalThreadPools.getInstance().getExecutorService().execute(packRunnable);
     }
 
     private byte[] joinData(byte[] data, int endFlag){
@@ -266,6 +315,142 @@ public class LzoneClient {
         return res;
     }
 
+    private void connTcp() throws IOException {
+        //创建socket连接
+        mSocket = new Socket();
+        SocketAddress socAddress = new InetSocketAddress(mIp, Integer.parseInt(mPort));
+        mSocket.connect(socAddress, TCP_TIME_OUT);
+        if(mSocket.isConnected()){
+            //设置读取超时时间
+            mSocket.setSoTimeout(TCP_TIME_OUT);
+
+            //设置输入输出流
+            mOs = mSocket.getOutputStream();
+            mIs= mSocket.getInputStream();
+
+            writeStr("Hello, I Lzone TCP Client", Vars.StopCharType.RN);
+        }
+    }
+
+    private void connUdp() throws IOException{
+        mDSocket = new DatagramSocket(myApplication.udpPort);
+        SocketAddress socAddress = new InetSocketAddress(mIp, Integer.parseInt(mPort));
+
+        byte[] data = "Hello, I Lzone UDP Client\r\n".getBytes(StandardCharsets.UTF_8);
+        mDPacketSend = new DatagramPacket(packSend, UDP_BUFF_SIZE, socAddress);
+        mDPacketRev = new DatagramPacket(packRev, UDP_BUFF_SIZE);
+
+        mDPacketSend.setData(data);
+        mDSocket.send(mDPacketSend);
+    }
+
+    /**
+     * @Desc: 数据接收线程
+     * @Author: Aries.hu
+     * @Date: 2021/5/3 22:19
+     */
+    private void runReceiveTask(){
+        PriorityRunnable revRunnable = new PriorityRunnable(PriorityType.HIGH, new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    while (isConn()){
+                        byte[] data = null;
+
+                        if(mConnType == Vars.ConnType.TCP){
+                            data = readBuffer();
+                        }else{
+                            data = readPack();
+                        }
+
+                        if(data == null){
+                            Thread.sleep(2);
+                        }else{
+                            Bundle bundle =new Bundle();
+                            bundle.putByteArray("rev", data);
+
+                            Message msg = handler.obtainMessage();
+                            msg.what = Constants.NET_DATA_REV;
+                            msg.obj = bundle;
+                            msg.sendToTarget();
+                        }
+
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    if(BuildConfig.DEBUG){
+                        System.out.println("receiveThread Exit!");
+                    }
+                }
+            }
+        });
+
+        LocalThreadPools.getInstance().getExecutorService().execute(revRunnable);
+    }
+
+    /**
+     * 读取输入流
+     * @return 字节数组
+     * @throws IOException IO错误
+     */
+    private byte[] readBuffer() throws IOException{
+        byte[] buf = null;
+        if(mIs == null){
+            return buf;
+        }
+
+        int count = mIs.available();
+
+        if(count > 0){
+            buf = new byte[count];
+            int len = mIs.read(buf);
+        }
+
+        return buf;
+    }
+
+    /**
+     * 读取udp报文
+     * @return 读取字节
+     * @throws IOException IO错误
+     */
+    private byte[] readPack() throws IOException{
+        byte[] buf = null;
+
+        if(mDSocket == null){
+            return buf;
+        }
+
+        mDSocket.receive(mDPacketRev);
+
+        if(mDPacketRev == null || mDPacketRev.getLength() == 0){
+            return buf;
+        }else{
+            final int len = mDPacketRev.getLength();
+            buf = new byte[len];
+            System.arraycopy(mDPacketRev.getData(), 0, buf, 0, len);
+        }
+
+        if (mDPacketRev != null) {
+            mDPacketRev.setLength(UDP_BUFF_SIZE);
+        }
+
+        return buf;
+    }
+
+    /**
+     * @Desc: 清空
+     * @Author: Aries.hu
+     * @Date: 2021/4/28 17:30
+     */
+    protected void skipBuffer() throws IOException{
+        if(mIs == null){
+            return;
+        }
+
+        long n = mIs.skip(mIs.available());
+    }
 
     /***********************************Dialog***********************************/
     static class ConnDialog extends AlertDialog{

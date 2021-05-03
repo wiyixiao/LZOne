@@ -2,6 +2,9 @@ package com.wiyixiao.lzone.utils;
 
 import android.text.TextUtils;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * Author:Think
  * Time:2021/2/3 10:14
@@ -25,6 +28,29 @@ public class DataTransform {
             '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     /**
+     * byte数组转成字符串
+     */
+    public static String byte2Str(byte[] data) {
+        return new String(data, StandardCharsets.US_ASCII);
+    }
+
+    public static String byte2Char(byte[] data){
+        return new String(data, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 将byte数组化为十六进制串
+     */
+
+    public static StringBuilder byte2hex(byte[] data) {
+        StringBuilder stringBuilder = new StringBuilder(data.length);
+        for (byte byteChar : data) {
+            stringBuilder.append(String.format("%02X ", byteChar).trim().toUpperCase());
+        }
+        return stringBuilder;
+    }
+
+    /**
      * @Desc: 字节转十六进制字符串
      * @Author: Aries.hu
      * @Date: 2021/2/3 11:19
@@ -45,7 +71,7 @@ public class DataTransform {
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sbuffer = new StringBuilder();
         for (byte aByte : bytes) {
-            String hex = Integer.toHexString(aByte & 0xFF);
+            String hex = Integer.toHexString(aByte & 0xFF).toUpperCase();
             if (hex.length() < 2) {
                 sbuffer.append(0);
             }

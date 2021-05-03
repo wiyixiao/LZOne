@@ -22,4 +22,10 @@ public interface IClientListener {
      */
     void disConn();
 
+    /**
+     * 接收数据监听
+     * @param rev 接收数据
+     */
+    void revCall(byte[] rev);
+
 }

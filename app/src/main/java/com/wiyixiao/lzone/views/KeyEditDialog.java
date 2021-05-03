@@ -10,9 +10,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
+import com.wiyixiao.lzone.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
+import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IKeyEditListener;
+import com.wiyixiao.lzone.utils.DataTransform;
 import com.wiyixiao.lzone.utils.DisplayUtil;
 
 import butterknife.BindView;
@@ -49,6 +52,7 @@ public class KeyEditDialog {
 
     private View mView;
     private Context mContext;
+    private MyApplication myApplication;
     private Dialog mDialog;
 
     private Unbinder unbinder;
@@ -58,6 +62,7 @@ public class KeyEditDialog {
 
     private KeyEditDialog(Context context, IKeyEditListener listener) {
         this.mContext = context;
+        this.myApplication = (MyApplication)context.getApplicationContext();
         this.listener = listener;
         this.mDialog = new Dialog(context, R.style.CustomDialog);
         this.mDialog.setTitle(context.getResources().getString(R.string.NAL_key_cfg));
@@ -110,7 +115,7 @@ public class KeyEditDialog {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.btn_del, R.id.btn_save})
+    @OnClick({R.id.btn_del, R.id.btn_save, R.id.ascii_btn, R.id.hex_btn})
     protected void onClick(View v){
         switch (v.getId()){
             case R.id.btn_del:
@@ -126,15 +131,46 @@ public class KeyEditDialog {
 
                 keyInfoBean.setType(asciiBtn.isChecked() ? 0 : 1);
                 keyInfoBean.setName(name);
-                keyInfoBean.setTxt_click(keyClickTxtEdit.getText().toString());
-                keyInfoBean.setTxt_lclick(keyLclickTxtEdit.getText().toString());
-                keyInfoBean.setTxt_release(keyReleaseTxtEdit.getText().toString());
+
+                //检测当前模式为ASCII OR HEX
+                if(asciiBtn.isChecked()){
+                    keyInfoBean.setTxt_click(keyClickTxtEdit.getText().toString());
+                    keyInfoBean.setTxt_lclick(keyLclickTxtEdit.getText().toString());
+                    keyInfoBean.setTxt_release(keyReleaseTxtEdit.getText().toString());
+                }else{
+                    keyInfoBean.setTxt_click(DataTransform.checkHexLength(keyClickTxtEdit.getText().toString()));
+                    keyInfoBean.setTxt_lclick(DataTransform.checkHexLength(keyLclickTxtEdit.getText().toString()));
+                    keyInfoBean.setTxt_release(DataTransform.checkHexLength(keyReleaseTxtEdit.getText().toString()));
+                }
+
                 keyInfoBean.setTime(keyTimeEdit.getText().toString());
 
                 listener.add(keyInfoBean);
                 break;
+            case R.id.ascii_btn:
+                initEdit(Vars.DataType.ASCII);
+                break;
+            case R.id.hex_btn:
+                initEdit(Vars.DataType.HEX);
+                break;
             default:
                 break;
+        }
+    }
+
+    private void initEdit(int dataType){
+        keyClickTxtEdit.setText("");
+        keyLclickTxtEdit.setText("");
+        keyReleaseTxtEdit.setText("");
+
+        if(dataType == Vars.DataType.ASCII){
+            keyClickTxtEdit.setFilters(myApplication.cmdAsciiFilter);
+            keyLclickTxtEdit.setFilters(myApplication.cmdAsciiFilter);
+            keyReleaseTxtEdit.setFilters(myApplication.cmdAsciiFilter);
+        }else {
+            keyClickTxtEdit.setFilters(myApplication.cmdHexFilter);
+            keyLclickTxtEdit.setFilters(myApplication.cmdHexFilter);
+            keyReleaseTxtEdit.setFilters(myApplication.cmdHexFilter);
         }
     }
 

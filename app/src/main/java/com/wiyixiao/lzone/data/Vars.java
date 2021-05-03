@@ -14,9 +14,20 @@ public class Vars {
         int ABOUT = 1;
     }
 
-    public interface  RevDataType{
+    public interface  DataType{
         int ASCII = 0;
         int HEX = 1;
+    }
+
+    public interface ConnType{
+        int TCP = 0;
+        int UDP = 1;
+    }
+
+    public interface  KeyTouchMode{
+        int PRESS   = 0;
+        int HOLD    = 1;
+        int RELEASE = 2;
     }
 
     public interface MsgType{

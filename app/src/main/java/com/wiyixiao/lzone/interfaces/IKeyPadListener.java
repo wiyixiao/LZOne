@@ -5,18 +5,10 @@ import com.wiyixiao.lzone.bean.KeyInfoBean;
 public interface IKeyPadListener {
 
     /**
-     * @Desc: 短按发送数据
+     * 按键触发回调
+     * @param bean 按键参数
+     * @param mode 触发模式
      */
-    void short_press(String data);
-
-    /**
-     * @Desc: 长按发送数据
-     */
-    void long_press(String data);
-
-    /**
-     * @Desc: 释放发送数据
-     */
-    void release_press(String data);
+    void touch_callback(KeyInfoBean bean, int mode);
 
 }

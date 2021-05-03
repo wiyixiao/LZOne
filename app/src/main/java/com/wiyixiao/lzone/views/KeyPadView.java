@@ -24,6 +24,7 @@ import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.core.PriorityRunnable;
 import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
+import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IKeyEditListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 
@@ -71,7 +72,7 @@ public class KeyPadView extends LinearLayout {
 
             switch (msg.what){
                 case Constants.KEY_LONG_PRESS:
-                    keyPadListener.long_press(msg.obj.toString());
+                    keyPadListener.touch_callback((KeyInfoBean) msg.obj, Vars.KeyTouchMode.HOLD);
                     break;
                 default:
                     break;
@@ -251,7 +252,7 @@ public class KeyPadView extends LinearLayout {
                                 //检测各长按按键定时时间
                                 Message msg = new Message();
                                 msg.what = Constants.KEY_LONG_PRESS;
-                                msg.obj = bean.getTxt_lclick();
+                                msg.obj = bean;
                                 pad.handler.sendMessage(msg);
                                 Thread.sleep(Integer.parseInt(bean.getTime()));
                             }
@@ -318,7 +319,7 @@ public class KeyPadView extends LinearLayout {
             switch (event.getAction() & MotionEvent.ACTION_MASK){
                 case MotionEvent.ACTION_DOWN:
                     if(!bean.equals(pad.longPressKey)){
-                        pad.keyPadListener.short_press(bean.getTxt_click());
+                        pad.keyPadListener.touch_callback(bean, Vars.KeyTouchMode.PRESS);
                     }
                     break;
                 case MotionEvent.ACTION_UP:
@@ -330,7 +331,7 @@ public class KeyPadView extends LinearLayout {
                         pad.longPressFlag = false;
                         pad.longPressKey = null;
                     }
-                    pad.keyPadListener.release_press(bean.getTxt_release());
+                    pad.keyPadListener.touch_callback(bean, Vars.KeyTouchMode.RELEASE);
 
                     break;
                 default:

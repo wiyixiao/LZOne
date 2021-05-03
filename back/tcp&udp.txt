@@ -9,6 +9,19 @@
     https://blog.csdn.net/lsalp/article/details/80592533
 
 
+####################AT ESP8266####################
+AT+RST                                      #重启
+AT+CWMODE=3                                 #STA + AP
+AT+CWSAP="Esp8266","passwd",11,4            #开启热点
+AT+CIPSTART="UDP","192.168.4.2",1025,1025,2 #远程IP,远程端口,本地端口
+AT+CIPMUX=1                                 #开启多连接
+AT+CIPSERVER=1,8080                         #开启服务器
+AT+CIPSERVER=0                              #停止服务器
+AT+CIPCLOSE
+
+AT+CIPSEND=1,5                              #服务器返回数据
+AT+CIFSR                                    #查看连接的地址
+
 ####################TCP Server####################
 
 private void startTCPServer() {

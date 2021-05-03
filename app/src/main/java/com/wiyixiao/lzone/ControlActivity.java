@@ -23,6 +23,7 @@ import android.widget.RadioButton;
 
 import com.google.gson.Gson;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
+import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.core.PriorityRunnable;
 import com.wiyixiao.lzone.core.PriorityType;
@@ -34,6 +35,7 @@ import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 import com.wiyixiao.lzone.net.LzoneClient;
 import com.wiyixiao.lzone.utils.DataTransform;
 import com.wiyixiao.lzone.utils.DisplayUtil;
+import com.wiyixiao.lzone.utils.Utils;
 import com.wiyixiao.lzone.views.KeyPadView;
 import com.wiyixiao.lzone.views.MsgView;
 import com.wiyixiao.lzone.views.SettingView;
@@ -83,10 +85,6 @@ public class ControlActivity extends AppCompatActivity {
     //连接客户端
     private LzoneClient lzoneClient;
 
-    //过滤器
-    private InputFilter[] cmdAsciiFilter = null;
-    private InputFilter[] cmdHexFilter = null;
-
     //记录上一次命令行值，避免每次发送重复检测有效字符
     private String lastHexCmd = "";
     private byte[] hexCmd = null;
@@ -97,18 +95,56 @@ public class ControlActivity extends AppCompatActivity {
     private IKeyPadListener mKeyPadListener = new IKeyPadListener() {
 
         @Override
-        public void short_press(String data) {
-            keySendData(data);
-        }
+        public void touch_callback(KeyInfoBean bean, int mode) {
+            String cmd = "";
+            byte[] hex = null;
+            switch (mode){
+                case Vars.KeyTouchMode.PRESS:
+                    cmd = bean.getTxt_click();
+                    if(bean.getType() == Vars.DataType.HEX){
+                        if(!bean.getLastClickHexCmd().equals(cmd)){
+                            cmd = DataTransform.checkHexLength(cmd);
+                            bean.setHexClickCmd(DataTransform.hexTobytes(cmd));
+                            bean.setLastClickHexCmd(cmd);
+                        }
+                        hex = bean.getHexClickCmd();
+                    }
+                    break;
+                case Vars.KeyTouchMode.HOLD:
+                    cmd = bean.getTxt_lclick();
+                    if(bean.getType() == Vars.DataType.HEX){
+                        if(!bean.getLastLClickHexCmd().equals(cmd)){
+                            cmd = DataTransform.checkHexLength(cmd);
+                            bean.setHexLClickCmd(DataTransform.hexTobytes(cmd));
+                            bean.setLastLClickHexCmd(cmd);
+                        }
+                        hex = bean.getHexLClickCmd();
+                    }
+                    break;
+                case Vars.KeyTouchMode.RELEASE:
+                    cmd = bean.getTxt_release();
+                    if(bean.getType() == Vars.DataType.HEX){
+                        if(!bean.getLastReleaseHexCmd().equals(cmd)){
+                            cmd = DataTransform.checkHexLength(cmd);
+                            bean.setHexReleaseCmd(DataTransform.hexTobytes(cmd));
+                            bean.setLastReleaseHexCmd(cmd);
+                        }
+                        hex = bean.getHexReleaseCmd();
+                    }
+                    break;
+                default:
+                    break;
+            }
 
-        @Override
-        public void long_press(String data) {
-            keySendData(data);
-        }
+            if(bean.getType() == Vars.DataType.ASCII){
+                lzoneClient.writeStr(cmd, myApplication.cfg.sv_stop_char_type);
+            }else{
+                lzoneClient.writeBytes(hex, myApplication.cfg.sv_stop_char_type);
+            }
 
-        @Override
-        public void release_press(String data) {
-            keySendData(data);
+            if(lzoneClient.isConn() && myApplication.cfg.sv_display_send){
+                msgView.add(getMsgItem(cmd), Vars.MsgType.SEND);
+            }
         }
     };
 
@@ -137,6 +173,17 @@ public class ControlActivity extends AppCompatActivity {
             DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_discon));
             connItem.setTitle(getResources().getString(R.string.NAL_menu_connect));
         }
+
+        @Override
+        public void revCall(byte[] rev) {
+            if(myApplication.cfg.sv_display_type == Vars.DataType.ASCII){
+                //字节数组以ASCII形式显示
+                msgView.add(getMsgRevItem(DataTransform.byte2Char(rev)), Vars.MsgType.REV);
+            }else{
+                //字节数组以HEX形式显示
+                msgView.add(getMsgRevItem(DataTransform.byte2hex(rev).toString()), Vars.MsgType.REV);
+            }
+        }
     };
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -154,7 +201,7 @@ public class ControlActivity extends AppCompatActivity {
                         //发送hex
                         //检测有效字符
                         if(!lastHexCmd.equals(cmd)){
-                            if(BuildConfig.DEBUG) System.out.println("**********Hex cmd set**********");
+                            if(BuildConfig.DEBUG) {System.out.println("**********Hex cmd set**********"); }
                             cmd = DataTransform.checkHexLength(cmd);
                             msgEdit.setText(cmd);
                             hexCmd = DataTransform.hexTobytes(cmd);
@@ -163,8 +210,8 @@ public class ControlActivity extends AppCompatActivity {
                         lzoneClient.writeBytes(hexCmd, myApplication.cfg.sv_stop_char_type);
                     }
 
-                    if(lzoneClient.isConn()){
-                        msgView.add(cmd, Vars.MsgType.SEND);
+                    if(lzoneClient.isConn() && myApplication.cfg.sv_display_send){
+                        msgView.add(getMsgItem(cmd), Vars.MsgType.SEND);
                     }
                     break;
                 default:
@@ -209,16 +256,13 @@ public class ControlActivity extends AppCompatActivity {
         lzoneClient = new LzoneClient(this);
         lzoneClient.setiClientListener(mClientListener);
 
-        //初始化过滤器
-        initEditCmdFilter();
-
         //加载命令行发送类型,设置初始过滤器
         if(myApplication.cfg.sv_send_type == 0){
             asciiBtn.setChecked(true);
-            msgEdit.setFilters(cmdAsciiFilter);
+            msgEdit.setFilters(myApplication.cmdAsciiFilter);
         }else{
             hexBtn.setChecked(true);
-            msgEdit.setFilters(cmdHexFilter);
+            msgEdit.setFilters(myApplication.cmdHexFilter);
         }
 
         //初始化自动发送线程
@@ -250,7 +294,9 @@ public class ControlActivity extends AppCompatActivity {
         switch (id){
             case R.id.item_connect:
                 if(!lzoneClient.isConn()){
-                    lzoneClient.connect(deviceInfoBean.getDevice_ip(), deviceInfoBean.getDevice_port());
+                    lzoneClient.connect(deviceInfoBean.getDevice_ip(),
+                                        deviceInfoBean.getDevice_port(),
+                                        deviceInfoBean.getDevice_type());
                 }else{
                     lzoneClient.close(false);
                 }
@@ -306,12 +352,12 @@ public class ControlActivity extends AppCompatActivity {
             case R.id.ascii_btn:
                 msgEdit.setText("");
                 myApplication.cfg.sv_send_type = 0;
-                msgEdit.setFilters(cmdAsciiFilter);
+                msgEdit.setFilters(myApplication.cmdAsciiFilter);
                 break;
             case R.id.hex_btn:
                 msgEdit.setText("");
                 myApplication.cfg.sv_send_type = 1;
-                msgEdit.setFilters(cmdHexFilter);
+                msgEdit.setFilters(myApplication.cmdHexFilter);
                 break;
             case R.id.send_btn:
                 if(deviceInfoBean.isAuto() && lzoneClient.isConn()){
@@ -396,29 +442,23 @@ public class ControlActivity extends AppCompatActivity {
         LocalThreadPools.getInstance().getExecutorService().execute(autoSendRunnable);
     }
 
-    private void initEditCmdFilter(){
-        cmdAsciiFilter = new InputFilter[]{};
-        cmdHexFilter = new InputFilter[]{
-                new LzoneInputFilter(getResources().getString(R.string.NAL_rule_hexval))
-        };
-    }
-
-
-    private void keySendData(String cmd){
-        lzoneClient.writeStr(cmd, myApplication.cfg.sv_stop_char_type);
-        if(lzoneClient.isConn()){
-            msgView.add(cmd, Vars.MsgType.SEND);
+    private String getMsgItem(String cmd){
+        StringBuffer sb = new StringBuffer();
+        if(myApplication.cfg.sv_display_time){
+            sb.append(Utils.getSysTime()).append(" ");
         }
+        sb.append(cmd);
+        return sb.toString();
     }
 
-
-
-
-
-
-
-
-
+    private String getMsgRevItem(String data){
+        StringBuffer sb = new StringBuffer();
+        if(myApplication.cfg.sv_display_rev_time){
+            sb.append(Utils.getSysTime()).append(" ");
+        }
+        sb.append(data);
+        return sb.toString();
+    }
 
 
 

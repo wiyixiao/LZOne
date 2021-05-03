@@ -1,17 +1,13 @@
 package com.wiyixiao.lzone;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnItemClick;
-import butterknife.OnItemLongClick;
-import butterknife.Unbinder;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +21,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.RadioButton;
+import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.wiyixiao.lzone.adapter.DeviceAdapter;
@@ -40,10 +40,18 @@ import com.wiyixiao.lzone.utils.NetUtil;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
+import butterknife.Unbinder;
+
 public class DeviceActivity extends AppCompatActivity {
 
     @BindView(R.id.grid_layout)
     GridView cardLayout;
+    @BindView(R.id.localAddrTv)
+    TextView localAddrTv;
 
     private Unbinder unbinder;
 
@@ -70,7 +78,7 @@ public class DeviceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_device);
 
         mContext = this.getApplicationContext();
-        myApplication = (MyApplication)mContext;
+        myApplication = (MyApplication) mContext;
         unbinder = ButterKnife.bind(this);
 
 
@@ -83,6 +91,7 @@ public class DeviceActivity extends AppCompatActivity {
         initSettingData();
         //初始化已连接设备列表
         initDeviceList();
+        localAddrSet();
     }
 
     @Override
@@ -108,7 +117,7 @@ public class DeviceActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         Intent intent = null;
-        switch (id){
+        switch (id) {
             case R.id.item_add:
                 //添加新的设备
                 showDeviceCfgDialog(null);
@@ -129,8 +138,8 @@ public class DeviceActivity extends AppCompatActivity {
     }
 
     @OnItemClick({R.id.grid_layout})
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-        switch (parent.getId()){
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
             case R.id.grid_layout:
                 //跳转控制页面
                 Intent intent = new Intent(this, ControlActivity.class);
@@ -144,8 +153,8 @@ public class DeviceActivity extends AppCompatActivity {
     }
 
     @OnItemLongClick({R.id.grid_layout})
-    public void onLongClick(AdapterView<?> parent, View view, int position, long id){
-        switch (parent.getId()){
+    public void onLongClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
             case R.id.grid_layout:
                 //长按弹窗进行修改
                 showDeviceCfgDialog(deviceArrayList.get(position));
@@ -159,17 +168,18 @@ public class DeviceActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode != Activity.RESULT_OK){
+        if (resultCode != Activity.RESULT_OK) {
             return;
         }
 
-        switch (requestCode){
+        switch (requestCode) {
             case Constants.REQUEST_CONTROL_BACK:
                 String device_json = data.getStringExtra(Constants.DEVICE_INTENT_NAME);
-                if(BuildConfig.DEBUG){
+                if (BuildConfig.DEBUG) {
                     Log.e(myApplication.getTAG(), device_json);
                 }
                 deviceUpdate(device_json);
+                localAddrSet();
                 break;
             default:
                 break;
@@ -177,18 +187,19 @@ public class DeviceActivity extends AppCompatActivity {
 
     }
 
-    private void initSettingData(){
+    private void initSettingData() {
         //读取数据库保存配置，加载
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             myApplication.settingData.setEnd_symbol_str("\r\n");
             myApplication.settingData.setShow_send(true);
             myApplication.settingData.setShow_time(true);
-            myApplication.settingData.setRev_type(Vars.RevDataType.ASCII);
+            myApplication.settingData.setRev_type(Vars.DataType.ASCII);
             return;
-        };
+        }
+        ;
     }
 
-    private void initDeviceList(){
+    private void initDeviceList() {
         deviceArrayList = new ArrayList<DeviceInfoBean>();
 
         deviceAdapter = new DeviceAdapter(mContext, deviceArrayList);
@@ -196,7 +207,7 @@ public class DeviceActivity extends AppCompatActivity {
         cardLayout.setSelection(0);
     }
 
-    private void showDeviceCfgDialog(DeviceInfoBean bean){
+    private void showDeviceCfgDialog(DeviceInfoBean bean) {
         //图层模板生成器句柄
         LayoutInflater factory = LayoutInflater.from(this);
         //用sname.xml模板生成视图模板
@@ -210,10 +221,10 @@ public class DeviceActivity extends AppCompatActivity {
         final Button btn_save = dialogView.findViewById(R.id.btn_save);
         final Button btn_del = dialogView.findViewById(R.id.btn_del);
 
-        if(bean != null){
-            if(bean.getDevice_type() == 0){
+        if (bean != null) {
+            if (bean.getDevice_type() == 0) {
                 btn_tcp.setChecked(true);
-            } else{
+            } else {
                 btn_udp.setChecked(true);
             }
 
@@ -223,7 +234,7 @@ public class DeviceActivity extends AppCompatActivity {
             et_port.setText(bean.getDevice_port());
         }
 
-        android.app.AlertDialog saveDialog =  new android.app.AlertDialog.Builder(this)
+        AlertDialog saveDialog = new AlertDialog.Builder(this)
                 .setTitle(getResources().getString(R.string.NAL_device_cfg))
                 //设置视图模板
                 .setView(dialogView)
@@ -240,13 +251,13 @@ public class DeviceActivity extends AppCompatActivity {
                 final boolean auto = checkBox_auto.isChecked();
 
                 //检测输入是否为空
-                if(TextUtils.isEmpty(ip) || TextUtils.isEmpty(port)){
+                if (TextUtils.isEmpty(ip) || TextUtils.isEmpty(port)) {
                     DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_input_empty));
                     return;
                 }
 
                 //检测IP地址格式是否正确
-                if(!NetUtil.isIp(ip)){
+                if (!NetUtil.isIp(ip)) {
                     DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_iperr));
                     return;
                 }
@@ -256,27 +267,27 @@ public class DeviceActivity extends AppCompatActivity {
                 //判断设备是否存在，进行添加或更新配置
                 boolean have = false;
                 int index = -1;
-                for (DeviceInfoBean b: deviceArrayList
-                     ) {
-                    if(b.getDevice_ip().equals(ip)){
+                for (DeviceInfoBean b : deviceArrayList
+                ) {
+                    if (b.getDevice_ip().equals(ip)) {
                         have = true;
-                        if(!b.getDevice_port().equals(port) || b.getDevice_type() != type || b.isAuto() != auto){
+                        if (!b.getDevice_port().equals(port) || b.getDevice_type() != type || b.isAuto() != auto) {
                             index = deviceArrayList.indexOf(b);
                         }
                         break;
                     }
                 }
 
-                if(!have){
+                if (!have) {
                     //未找到设备，添加
                     deviceArrayList.add(tempBean);
-                }else if(index < 0){
+                } else if (index < 0) {
                     //设备已添加，无需更新配置
                     DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_added));
                     return;
                 }
 
-                if(index >= 0){
+                if (index >= 0) {
                     //找到设备，需要更新配置
                     tempBean = deviceArrayList.get(index);
                     tempBean.setDevice_port(port);
@@ -293,23 +304,23 @@ public class DeviceActivity extends AppCompatActivity {
         btn_del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bean != null){
+                if (bean != null) {
                     deviceDel(bean);
                     //取消关闭弹窗
                     saveDialog.dismiss();
-                }else{
+                } else {
                     DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_invalid));
                 }
             }
         });
     }
 
-    private void deviceClear(){
+    private void deviceClear() {
         System.out.println("清空设备");
-        if(deviceArrayList.size() > 0){
+        if (deviceArrayList.size() > 0) {
             deviceArrayList.clear();
             deviceAdapter.notifyDataSetChanged();
-        }else{
+        } else {
             DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_device_zero));
             return;
         }
@@ -318,7 +329,7 @@ public class DeviceActivity extends AppCompatActivity {
 
     }
 
-    private void deviceDel(DeviceInfoBean bean){
+    private void deviceDel(DeviceInfoBean bean) {
         deviceArrayList.remove(bean);
         deviceAdapter.notifyDataSetChanged();
         System.out.println(String.format("移除设备: %s", bean.getDevice_ip()));
@@ -327,20 +338,19 @@ public class DeviceActivity extends AppCompatActivity {
 
     }
 
-    private void deviceSet(DeviceInfoBean bean)
-    {
+    private void deviceSet(DeviceInfoBean bean) {
         deviceAdapter.notifyDataSetChanged();
         System.out.println(String.format("添加或更新设备: %s", bean.getDevice_ip()));
         //更新数据库
 
     }
 
-    private void deviceUpdate(String json){
+    private void deviceUpdate(String json) {
         DeviceInfoBean bean = new Gson().fromJson(json, DeviceInfoBean.class);
 
-        for (DeviceInfoBean b: deviceArrayList
-             ) {
-            if(b.getDevice_ip().equals(bean.getDevice_ip())){
+        for (DeviceInfoBean b : deviceArrayList
+        ) {
+            if (b.getDevice_ip().equals(bean.getDevice_ip())) {
                 b.setAuto(bean.isAuto());
                 b.setDevice_type(bean.getDevice_type());
 
@@ -351,6 +361,29 @@ public class DeviceActivity extends AppCompatActivity {
         }
 
         deviceAdapter.notifyDataSetChanged();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void localAddrSet(){
+
+        final String addr = getlocalip();
+
+        if(addr == null){
+            localAddrTv.setText("No wifi");
+        }else{
+            StringBuffer sb = new StringBuffer();
+            sb.append(addr).append(":").append(myApplication.udpPort);
+            localAddrTv.setText(sb.toString());
+        }
+    }
+
+    private String getlocalip(){
+        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+        if(ipAddress==0)return null;
+        return ((ipAddress & 0xff)+"."+(ipAddress>>8 & 0xff)+"."
+                +(ipAddress>>16 & 0xff)+"."+(ipAddress>>24 & 0xff));
     }
 
 }

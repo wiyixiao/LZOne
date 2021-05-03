@@ -10,6 +10,62 @@ public class KeyInfoBean {
     private int type;   //0: Ascii, 1: Hex
     private int index;
 
+    //记录值，避免HEX模式下每次发送相同值都要重新获取一下
+    private String lastClickHexCmd;
+    private byte[] hexClickCmd;
+    private String lastLClickHexCmd;
+    private byte[] hexLClickCmd;
+    private String lastReleaseHexCmd;
+    private byte[] hexReleaseCmd;
+
+    public String getLastClickHexCmd() {
+        return lastClickHexCmd == null ? "" : lastClickHexCmd;
+    }
+
+    public void setLastClickHexCmd(String lastClickHexCmd) {
+        this.lastClickHexCmd = lastClickHexCmd;
+    }
+
+    public byte[] getHexClickCmd() {
+        return hexClickCmd;
+    }
+
+    public void setHexClickCmd(byte[] hexClickCmd) {
+        this.hexClickCmd = hexClickCmd;
+    }
+
+    public String getLastLClickHexCmd() {
+        return lastLClickHexCmd == null ? "" : lastLClickHexCmd;
+    }
+
+    public void setLastLClickHexCmd(String lastLClickHexCmd) {
+        this.lastLClickHexCmd = lastLClickHexCmd;
+    }
+
+    public byte[] getHexLClickCmd() {
+        return hexLClickCmd;
+    }
+
+    public void setHexLClickCmd(byte[] hexLClickCmd) {
+        this.hexLClickCmd = hexLClickCmd;
+    }
+
+    public String getLastReleaseHexCmd() {
+        return lastReleaseHexCmd == null ? "" : lastReleaseHexCmd;
+    }
+
+    public void setLastReleaseHexCmd(String lastReleaseHexCmd) {
+        this.lastReleaseHexCmd = lastReleaseHexCmd;
+    }
+
+    public byte[] getHexReleaseCmd() {
+        return hexReleaseCmd;
+    }
+
+    public void setHexReleaseCmd(byte[] hexReleaseCmd) {
+        this.hexReleaseCmd = hexReleaseCmd;
+    }
+
     public String getName() {
         return name == null ? "" : name;
     }

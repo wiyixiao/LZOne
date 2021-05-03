@@ -229,7 +229,7 @@ public class SettingView {
 
         myApplication.cfg.sv_stop_char_type = (rnRbtn.isChecked() ? 0 : (nRbtn.isChecked() ? 1 : 2));
 
-        //检测终止符是否位偶数，不是偶数去除最后一位
+        //检测终止符是否为偶数，不是偶数去除最后一位
         final String str = editHexRn.getText().toString();
         myApplication.cfg.sv_stop_char_val = DataTransform.checkHexLength(str);
 

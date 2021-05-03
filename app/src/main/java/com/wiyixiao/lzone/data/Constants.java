@@ -28,5 +28,6 @@ public class Constants {
      */
     public static final int NET_CONN_SUCCESS = 0x40;
     public static final int NET_CONN_FAILED = 0x41;
+    public static final int NET_DATA_REV    = 0x42;
 
 }
