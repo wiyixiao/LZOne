@@ -1,6 +1,14 @@
 package com.wiyixiao.lzone.bean;
 
+import android.content.ContentValues;
+
 public class DeviceInfoBean {
+
+    //对应数据库列标题
+    public static final String _IP = "ip";
+    public static final String _PORT = "port";
+    public static final String _TYPE = "type";
+    public static final String _AUTO = "auto";
 
     private String device_ip;
     private String device_port;
@@ -8,6 +16,9 @@ public class DeviceInfoBean {
     private boolean auto;   //是否定时发送
 
     private int imageId;
+
+    public DeviceInfoBean() {
+    }
 
     public DeviceInfoBean(String device_ip, String device_port, int device_type, boolean auto, int imageId) {
         this.device_ip = device_ip;
@@ -55,6 +66,15 @@ public class DeviceInfoBean {
 
     public void setDevice_type(int device_type) {
         this.device_type = device_type;
+    }
+
+    public ContentValues toContentValues(){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(_IP, device_ip);
+        contentValues.put(_PORT, device_port);
+        contentValues.put(_TYPE, device_type);
+        contentValues.put(_AUTO, auto);
+        return contentValues;
     }
 
 }

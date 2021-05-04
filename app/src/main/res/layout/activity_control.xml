@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.wiyixiao.lzone.ControlActivity">
+    tools:context="com.wiyixiao.lzone.activity.ControlActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

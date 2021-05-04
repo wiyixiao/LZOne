@@ -1,4 +1,4 @@
-package com.wiyixiao.lzone;
+package com.wiyixiao.lzone.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -27,6 +27,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
+import com.wiyixiao.lzone.BuildConfig;
+import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.DeviceAdapter;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.bean.SettingInfoBean;
@@ -34,6 +36,7 @@ import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.db.DBManager;
+import com.wiyixiao.lzone.db.DBTable;
 import com.wiyixiao.lzone.utils.DisplayUtil;
 import com.wiyixiao.lzone.utils.NetUtil;
 
@@ -84,6 +87,7 @@ public class DeviceActivity extends AppCompatActivity {
 
         //初始化数据库
         myApplication.dbManager = new DBManager(mContext);
+        System.out.println("**********" + myApplication.dbManager.getDbInfo() + "**********");
         //初始化设置
         myApplication.settingData = new SettingInfoBean();
 
@@ -205,6 +209,13 @@ public class DeviceActivity extends AppCompatActivity {
         deviceAdapter = new DeviceAdapter(mContext, deviceArrayList);
         cardLayout.setAdapter(deviceAdapter);
         cardLayout.setSelection(0);
+
+        if(myApplication.dbManager.getTableDataCount(DBTable.TableName.device) == 0){
+            System.out.println("********** no device in DB **********");
+        }else{
+            //读取数据库，加载
+            deviceArrayList.addAll(myApplication.dbManager.getDevices());
+        }
     }
 
     private void showDeviceCfgDialog(DeviceInfoBean bean) {
@@ -325,24 +336,39 @@ public class DeviceActivity extends AppCompatActivity {
             return;
         }
 
-        //更新数据库
-
+        //清除所有保存的设备及其保存的按键
+        myApplication.dbManager.initDbTable();
     }
 
     private void deviceDel(DeviceInfoBean bean) {
         deviceArrayList.remove(bean);
         deviceAdapter.notifyDataSetChanged();
+        //删除全部设备执行
+        if(deviceArrayList.size() <= 0){
+            myApplication.dbManager.initDbTable();
+        }
         System.out.println(String.format("移除设备: %s", bean.getDevice_ip()));
 
         //更新数据库
-
+        int count = myApplication.dbManager.removeDevice(bean.getDevice_ip());
+        //删除设备对应的按键
+        if(myApplication.dbManager.searchData(DBTable.TableName.key, bean.getDevice_ip())){
+            myApplication.dbManager.clearKeysByIp(bean.getDevice_ip());
+        }
     }
 
     private void deviceSet(DeviceInfoBean bean) {
         deviceAdapter.notifyDataSetChanged();
         System.out.println(String.format("添加或更新设备: %s", bean.getDevice_ip()));
         //更新数据库
-
+        //根据IP查找是否存在，不存在添加设备，存在更新设备
+        if(!myApplication.dbManager.searchData(DBTable.TableName.device, bean.getDevice_ip())){
+            //不存在，添加
+            long id = myApplication.dbManager.insertDevice(bean);
+        }else{
+            //存在，更新
+            int count = myApplication.dbManager.updateDevice(bean);
+        }
     }
 
     private void deviceUpdate(String json) {
@@ -355,7 +381,7 @@ public class DeviceActivity extends AppCompatActivity {
                 b.setDevice_type(bean.getDevice_type());
 
                 //更新数据库
-
+                int count = myApplication.dbManager.updateDevice(b);
                 break;
             }
         }

@@ -15,7 +15,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
-import com.wiyixiao.lzone.MyApplication;
+import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.data.Vars;

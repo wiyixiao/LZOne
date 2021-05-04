@@ -9,14 +9,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.wiyixiao.lzone.BuildConfig;
-import com.wiyixiao.lzone.MyApplication;
+import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.MyAdapter;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
@@ -25,8 +24,10 @@ import com.wiyixiao.lzone.core.PriorityRunnable;
 import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
+import com.wiyixiao.lzone.db.DBTable;
 import com.wiyixiao.lzone.interfaces.IKeyEditListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
+import com.wiyixiao.lzone.utils.DisplayUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -84,13 +85,19 @@ public class KeyPadView extends LinearLayout {
 
     private IKeyEditListener iKeyEditListener = new IKeyEditListener() {
         @Override
-        public void add(KeyInfoBean bean) {
+        public void add(KeyInfoBean bean, String oldname) {
 
             int keyCount = 0;
             int index = 0;
 
             //非配置模式且不包含则添加、否则更新
             if(!cfgMode && !keyArrayList.contains(bean)){
+
+                if(myApplication.dbManager.searchKey(bean.getIp(), bean.getName())){
+                    DisplayUtil.showMsg(mContext, "Duplicate name!");
+                    return;
+                }
+
                 //获取当前按键数量
                 keyCount = keyArrayList.size();
                 index = keyCount;
@@ -100,11 +107,15 @@ public class KeyPadView extends LinearLayout {
                 keyArrayList.add(bean);
 
                 //添加数据库
-
+                long count = myApplication.dbManager.insertKey(bean);
             }else{
                 index = keyArrayList.indexOf(bean);
-                //更新数据库
-
+                //更新
+                if(myApplication.dbManager.searchKey(bean.getIp(), bean.getName())){
+                    //改名冲突，保留原名
+                    bean.setName(oldname);
+                }
+                int count = myApplication.dbManager.updateKey(bean, oldname);
             }
 
             keyCount = keyArrayList.size();
@@ -113,7 +124,8 @@ public class KeyPadView extends LinearLayout {
                 keyInitBtn.setVisibility(GONE);
             }
 
-            keysAdapter.notifyItemRangeChanged(index, 1);
+//            keysAdapter.notifyItemRangeChanged(index, 1);
+            keysAdapter.notifyDataSetChanged();
             keyEditDialog.dismissDialog();
         }
 
@@ -125,7 +137,7 @@ public class KeyPadView extends LinearLayout {
                 keysAdapter.notifyDataSetChanged();
 
                 //更新数据库
-
+                myApplication.dbManager.removeKey(bean);
                 keyEditDialog.dismissDialog();
             }
 
@@ -171,7 +183,7 @@ public class KeyPadView extends LinearLayout {
 
     public void keyShowEditDialog(){
         if(!cfgMode){
-            keyEditDialog.showDialog(null);
+            keyEditDialog.showDialog(null, ip);
         }
     }
 
@@ -180,7 +192,9 @@ public class KeyPadView extends LinearLayout {
             keyArrayList.clear();
             keysAdapter.notifyDataSetChanged();
 
-            //根据IP，更新数据库
+            //删除指定IP对应的按键数据，更新数据库
+            int count = myApplication.dbManager.clearKeysByIp(ip);
+            DisplayUtil.showMsg(mContext, String.format("Clear keys by %s : %s", ip, count));
 
             //显示初始化按钮
             keyInitBtn.setVisibility(VISIBLE);
@@ -346,18 +360,20 @@ public class KeyPadView extends LinearLayout {
         //读取数据库初始化按键数据
         keyArrayList = new ArrayList<KeyInfoBean>();
 
-        //根据IP查询其对应的自定义按键数量，数量为0时显示恢复默认设置按钮
-        int keyCount = 0;
-        if(keyCount == 0){
-            keysReset();
-        }
-
         //初始化适配器
         keysRv.post(new Runnable() {
             @Override
             public void run() {
                 int height = keysRv.getMeasuredHeight();
                 int width = keysRv.getMeasuredWidth();
+
+                //根据IP查询其对应的自定义按键数量，数量为0时显示恢复默认设置按钮
+                if(!myApplication.dbManager.searchData(DBTable.TableName.key, ip)){
+                    keysReset();
+                }else{
+                    //添加结果到列表
+                    keyArrayList.addAll(myApplication.dbManager.getKeys(ip));
+                }
 
                 Log.e(myApplication.getTAG(), String.format("width, height: %s, %s", width, height));
                 keySzieSet(width, height);
@@ -392,7 +408,7 @@ public class KeyPadView extends LinearLayout {
                     @Override
                     public void onClick(View v) {
                         if(cfgMode){
-                            keyEditDialog.showDialog(item);
+                            keyEditDialog.showDialog(item, ip);
                         }
                     }
                 });
@@ -464,12 +480,16 @@ public class KeyPadView extends LinearLayout {
     private void keysReset(){
         for(int i=0;i<myApplication.keyDdefaultCount;i++){
             KeyInfoBean bean = new KeyInfoBean();
+            bean.setIp(ip);
             bean.setName(String.format("Run%s", i));
+            bean.setTxt_click("");
+            bean.setTxt_lclick("");
+            bean.setTxt_release("");
+            bean.setTime("");
             bean.setIndex(i);
+            myApplication.dbManager.insertKey(bean);
             keyArrayList.add(bean);
         }
-
-        //更新数据库
         
     }
 

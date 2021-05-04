@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:background="@color/colorContentBg">
 
     <TextView
@@ -14,18 +15,33 @@
         android:paddingTop="@dimen/dp_5"
         android:paddingBottom="@dimen/dp_5"
         android:text="1.0.0"
-        android:textSize="@dimen/sp_16"
+        android:textSize="@dimen/sp_20"
         android:gravity="center"
         android:textColor="@color/colorBlack333333"/>
 
-    <TextView
-        android:id="@+id/about_info_tv"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/dp_5"
-        android:text=""
-        android:textColor="@color/colorBlack888888"
-        android:scrollbars="vertical"
-        android:verticalScrollbarPosition="right" />
+        android:layout_height="@dimen/dp_20"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="wiyixiao"
+        android:textSize="@dimen/sp_16"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_10"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="https://www.wiyixiao4.com"
+        android:textSize="@dimen/sp_16"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:autoLink="web"/>
 
 </LinearLayout>

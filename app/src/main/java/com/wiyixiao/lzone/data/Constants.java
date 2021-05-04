@@ -14,6 +14,7 @@ public class Constants {
      * 0x10 ~ 0x19
      */
     public static final int REQUEST_CONTROL_BACK = 0x10;
+    public static final int REQUEST_SHARE_FILE_CODE = 0x10;
 
     /**
      * @Desc: Key

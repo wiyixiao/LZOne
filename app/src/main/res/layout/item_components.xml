@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/dp_100"
-    android:layout_height="@dimen/dp_80"
+    android:layout_height="@dimen/dp_85"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center_vertical"
@@ -20,6 +20,7 @@
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_30"
             android:src="@drawable/logo"
+            android:layout_marginBottom="@dimen/dp_2"
             android:layout_gravity="center"/>
 
         <LinearLayout

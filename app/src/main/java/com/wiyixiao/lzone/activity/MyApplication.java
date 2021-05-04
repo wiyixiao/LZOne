@@ -1,8 +1,10 @@
-package com.wiyixiao.lzone;
+package com.wiyixiao.lzone.activity;
 
 import android.content.res.Configuration;
 import android.text.InputFilter;
 
+import com.wiyixiao.lzone.BuildConfig;
+import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.base.ApplaicationBase;
 import com.wiyixiao.lzone.bean.SettingInfoBean;
 import com.wiyixiao.lzone.core.LocalThreadPools;
@@ -10,6 +12,8 @@ import com.wiyixiao.lzone.data.CfgDataManager;
 import com.wiyixiao.lzone.data.LzoneInputFilter;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.db.DBManager;
+
+import pl.com.salsoft.sqlitestudioremote.SQLiteStudioService;
 
 public class MyApplication extends ApplaicationBase {
 
@@ -21,6 +25,11 @@ public class MyApplication extends ApplaicationBase {
      * @Desc: 当前页面ID
      */
     public int intentType = Vars.IntentType.CONTROL;
+
+    /**
+     * @Desc: 文件保存位置
+     */
+    public final String saveDir = "/Wiyixiao/LZone/";
 
     /**
      * @Desc: 数据库名称&版本
@@ -72,6 +81,11 @@ public class MyApplication extends ApplaicationBase {
 
         //初始化线程池
         LocalThreadPools.getInstance().init(this);
+
+        //开启SQLiteStudio服务
+        if(BuildConfig.DEBUG){
+            SQLiteStudioService.instance().start(this);
+        }
     }
 
     private void initEditCmdFilter(){

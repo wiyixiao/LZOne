@@ -56,6 +56,8 @@
 	<string name="NAL_conn_no">请连接设备</string>
 	<string name="NAL_cmd_automode">命令行定时发送(200ms)</string>
 	<string name="NAL_cmd_pressmode">退出定时发送</string>
+	<string name="NAL_share_title">分享文件</string>
+	<string name="NAL_savedialog_tittle">请输入文件名</string>
 	<string name="NAL_rule_number">0123456789</string>
 	<string name="NAL_rule_hexval">0123456789ABCDEF</string>
 	<string name="NAL_rul_ip">.0123456789</string>

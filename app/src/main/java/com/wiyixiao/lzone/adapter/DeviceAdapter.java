@@ -63,7 +63,9 @@ public class DeviceAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.imageView.setImageResource(mBean.getImageId());
+//        holder.imageView.setImageResource(mBean.getImageId());
+        //固定图片资源
+        holder.imageView.setImageResource(R.drawable.logo);
         holder.ip_tv.setText(mBean.getDevice_ip());
         holder.port_tv.setText(mBean.getDevice_port());
         holder.type_tv.setText(mBean.getDevice_type() == 0 ? "TCP" : "UDP");

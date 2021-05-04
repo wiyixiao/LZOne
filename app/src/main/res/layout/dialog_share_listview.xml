@@ -1,0 +1,80 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/dialogTV"
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:layout_height="match_parent"
+            android:text="Share file"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimary"
+            tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/cancel_tv"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingRight="10dp"
+            tools:ignore="RtlSymmetry"
+            android:paddingEnd="10dp"
+            app:drawableEndCompat="@android:drawable/ic_menu_close_clear_cancel"
+            app:drawableRightCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/dialogLv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="5dp"
+        android:background="@drawable/border_bottom"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="1dp">
+
+        <Button
+            android:id="@+id/share_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/NAL_btn_ok"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:theme="@style/WhiteButtonStyle"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/delete_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/NAL_btn_del"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:theme="@style/WhiteButtonStyle"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+</LinearLayout>

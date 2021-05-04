@@ -1,4 +1,4 @@
-package com.wiyixiao.lzone;
+package com.wiyixiao.lzone.activity;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.data.CfgDataManager;
 
 public class LogoActivity extends AppCompatActivity {
@@ -34,8 +35,8 @@ public class LogoActivity extends AppCompatActivity {
 
     //权限列表
     private static String[] mPermissions = new String[]{
-            //Manifest.permission.ACCESS_COARSE_LOCATION,
-            //Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
@@ -178,7 +179,7 @@ public class LogoActivity extends AppCompatActivity {
                             cancelPermissionDialog();
                             finish();
 
-                            Uri packageURI = Uri.parse(String.format("package:%s", com.wiyixiao.lzone.LogoActivity.this.getPackageName()));
+                            Uri packageURI = Uri.parse(String.format("package:%s", LogoActivity.this.getPackageName()));
                             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
                             startActivity(intent);
                         }

@@ -132,7 +132,8 @@
                 android:text=""
                 android:textSize="@dimen/sp_14"
                 android:inputType="number"
-                android:lines="1"/>
+                android:lines="1"
+                android:maxLength="5"/>
 
         </TableRow>
 

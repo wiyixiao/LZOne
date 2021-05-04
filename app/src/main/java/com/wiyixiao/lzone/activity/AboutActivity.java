@@ -1,4 +1,4 @@
-package com.wiyixiao.lzone;
+package com.wiyixiao.lzone.activity;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.utils.DisplayUtil;
 import com.wiyixiao.lzone.utils.PackageUtil;
@@ -22,8 +23,6 @@ public class AboutActivity extends AppCompatActivity {
 
     @BindView(R.id.version_info_tv)
     TextView versionInfoTv;
-    @BindView(R.id.about_info_tv)
-    TextView aboutInfoTv;
 
     private MyApplication myApplication;
     private Unbinder unbinder;

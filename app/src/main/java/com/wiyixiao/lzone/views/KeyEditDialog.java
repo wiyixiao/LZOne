@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
-import com.wiyixiao.lzone.MyApplication;
+import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.data.Vars;
@@ -59,6 +59,7 @@ public class KeyEditDialog {
 
     private KeyInfoBean keyInfoBean;
     private IKeyEditListener listener;
+    private String ip;
 
     private KeyEditDialog(Context context, IKeyEditListener listener) {
         this.mContext = context;
@@ -81,7 +82,8 @@ public class KeyEditDialog {
         return new KeyEditDialog(context, listener);
     }
 
-    public void showDialog(KeyInfoBean bean) {
+    public void showDialog(KeyInfoBean bean, String ip) {
+        this.ip = ip;
         if (this.mDialog != null && !this.mDialog.isShowing()) {
 
             if(bean != null){
@@ -89,8 +91,10 @@ public class KeyEditDialog {
 
                 if(bean.getType() == 0){
                     asciiBtn.setChecked(true);
+                    initEdit(Vars.DataType.ASCII);
                 }else{
                     hexBtn.setChecked(true);
+                    initEdit(Vars.DataType.HEX);
                 }
                 keyNameEdit.setText(bean.getName());
                 keyClickTxtEdit.setText(bean.getTxt_click());
@@ -123,12 +127,14 @@ public class KeyEditDialog {
                 break;
             case R.id.btn_save:
                 final String name = keyNameEdit.getText().toString();
+                final String oldname = keyInfoBean.getName();
 
                 if(TextUtils.isEmpty(name)){
                     DisplayUtil.showMsg(mContext, mContext.getResources().getString(R.string.NAL_input_empty));
                     return;
                 }
 
+                keyInfoBean.setIp(this.ip);
                 keyInfoBean.setType(asciiBtn.isChecked() ? 0 : 1);
                 keyInfoBean.setName(name);
 
@@ -145,7 +151,7 @@ public class KeyEditDialog {
 
                 keyInfoBean.setTime(keyTimeEdit.getText().toString());
 
-                listener.add(keyInfoBean);
+                listener.add(keyInfoBean, oldname);
                 break;
             case R.id.ascii_btn:
                 initEdit(Vars.DataType.ASCII);

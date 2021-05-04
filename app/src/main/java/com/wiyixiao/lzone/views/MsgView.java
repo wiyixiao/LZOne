@@ -12,12 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
-import com.wiyixiao.lzone.MyApplication;
+import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.adapter.MyAdapter;
 import com.wiyixiao.lzone.bean.MsgBean;
 import com.wiyixiao.lzone.data.Vars;
+import com.wiyixiao.lzone.utils.DisplayUtil;
+import com.wiyixiao.lzone.utils.FileUtil;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -135,13 +138,58 @@ public class MsgView extends LinearLayout {
         }
     }
 
-    public void share(){
+    public boolean save(String filep) throws Exception{
+        if(msgArrayList.size() <= 0){
+            DisplayUtil.showMsg(mContext, "Data null!");
+            return false;
+        }
 
+        StringBuffer sb = new StringBuffer();
+        FileOutputStream outputStream = new FileOutputStream(filep, true);
+        for (MsgBean bean: msgArrayList
+             ) {
+            sb.append(bean.getMsg_txt()).append("\n");
+        }
+
+        if(FileUtil.checkFile(filep)){
+            //写入内容
+            //输出带BOM头的csv文件
+            outputStream.write(new byte[]{(byte)0xEF, (byte)0xBB, (byte)0xBF});
+            //写入文件内容
+            outputStream.write(sb.toString().getBytes());
+            //关闭文件流
+            outputStream.flush();
+            outputStream.close();
+
+            return true;
+        }
+
+        return false;
     }
 
     public void close() {
         unbinder.unbind();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

@@ -1,33 +1,26 @@
 package com.wiyixiao.lzone.net;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.wiyixiao.lzone.BuildConfig;
-import com.wiyixiao.lzone.MyApplication;
+import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.core.LocalThreadPools;
-import com.wiyixiao.lzone.core.PriorityExecutor;
 import com.wiyixiao.lzone.core.PriorityRunnable;
 import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IClientListener;
 import com.wiyixiao.lzone.utils.DataTransform;
-import com.wiyixiao.lzone.utils.ModBusData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,9 +30,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Author:Think

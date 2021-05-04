@@ -4,7 +4,7 @@ import com.wiyixiao.lzone.bean.KeyInfoBean;
 
 public interface IKeyEditListener {
 
-    void add(KeyInfoBean bean);
+    void add(KeyInfoBean bean, String oldname);
 
     void remove(KeyInfoBean bean);
 

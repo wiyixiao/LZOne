@@ -1,44 +1,53 @@
-package com.wiyixiao.lzone;
+package com.wiyixiao.lzone.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.text.InputFilter;
-import android.text.method.DigitsKeyListener;
+import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
 import com.google.gson.Gson;
+import com.wiyixiao.lzone.BuildConfig;
+import com.wiyixiao.lzone.R;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.bean.KeyInfoBean;
 import com.wiyixiao.lzone.core.LocalThreadPools;
 import com.wiyixiao.lzone.core.PriorityRunnable;
 import com.wiyixiao.lzone.core.PriorityType;
 import com.wiyixiao.lzone.data.Constants;
-import com.wiyixiao.lzone.data.LzoneInputFilter;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IClientListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
 import com.wiyixiao.lzone.net.LzoneClient;
 import com.wiyixiao.lzone.utils.DataTransform;
 import com.wiyixiao.lzone.utils.DisplayUtil;
+import com.wiyixiao.lzone.utils.FileUtil;
 import com.wiyixiao.lzone.utils.Utils;
 import com.wiyixiao.lzone.views.KeyPadView;
 import com.wiyixiao.lzone.views.MsgView;
 import com.wiyixiao.lzone.views.SettingView;
+import com.wiyixiao.lzone.views.ShareFileView;
 
 import java.util.Objects;
 
@@ -84,6 +93,9 @@ public class ControlActivity extends AppCompatActivity {
 
     //连接客户端
     private LzoneClient lzoneClient;
+
+    //分享文件弹窗
+    private ShareFileView shareFileView;
 
     //记录上一次命令行值，避免每次发送重复检测有效字符
     private String lastHexCmd = "";
@@ -328,7 +340,7 @@ public class ControlActivity extends AppCompatActivity {
                 settingView.showDialog(deviceInfoBean);
                 break;
             case R.id.item_save:
-                DisplayUtil.showMsg(mContext, "保存到文件");
+                saveShare();
                 break;
             default:
                 break;
@@ -460,6 +472,102 @@ public class ControlActivity extends AppCompatActivity {
         return sb.toString();
     }
 
+    /******************************************Share Data***************************************/
+     @Override
+     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+         switch (requestCode){
+             case Constants.REQUEST_SHARE_FILE_CODE:
+                 if(shareFileView != null){
+                 FileUtil.deleteSingleFile(shareFileView.getmUnZipFilePath());
+                 }
+             break;
+             default:
+             break;
+         }
+     }
+
+    private void shareLocalFile(String path, String name){
+        shareFileView = new ShareFileView(this,
+                path,
+                name,
+                FileUtil.getFilesAllName(path));
+
+        shareFileView.show();
+    }
+
+    private void saveShare() {
+        //图层模板生成器句柄
+        LayoutInflater factory = LayoutInflater.from(this);
+        //用sname.xml模板生成视图模板
+        final View DialogView = factory.inflate(R.layout.item_input_sname, null);
+        AlertDialog saveDialog =  new AlertDialog.Builder(this)
+                //设置视图模板
+                .setView(DialogView)
+                //确定按键响应函数
+                .setPositiveButton(getResources().getString(R.string.NAL_btn_ok),
+                        new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                EditText text1 = (EditText) DialogView.findViewById(R.id.sname);  //得到文件名输入框句柄
+                                String fileName = text1.getText().toString();  //得到文件名
+
+                                if(TextUtils.isEmpty(fileName)) {
+                                    return;
+                                }
+
+                                try {
+                                    //如果SD卡已准备好
+                                    if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                                        saveMsgData(fileName);
+                                    } else {
+                                        DisplayUtil.showMsg(mContext, "Save file error!");
+                                    }
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                //取消按键响应函数,直接退出对话框不做任何处理
+                .setNegativeButton(getResources().getString(R.string.NAL_btn_cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).show();  //显示对话框
+
+        Button btnPositive = saveDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button btnNegative = saveDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
+        layoutParams.weight = 10;
+        int btnColor = ContextCompat.getColor(this, R.color.colorPrimary);
+        btnPositive.setLayoutParams(layoutParams);
+        btnNegative.setLayoutParams(layoutParams);
+        btnPositive.setTextColor(btnColor);
+        btnNegative.setTextColor(btnColor);
+
+    }
+
+    private void saveMsgData(String fileName){
+        String savePath = Environment.getExternalStorageDirectory().getPath() + myApplication.saveDir;
+
+        //判断文件夹是否存在，不存在创建
+        FileUtil.checkDir(savePath);
+
+        try{
+            //保存文件
+            if(msgView.save(savePath + fileName + ".csv")){
+                //保存完成，分享文件
+                shareLocalFile(savePath, fileName);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 
 }

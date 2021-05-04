@@ -56,6 +56,8 @@
 	<string name="NAL_conn_no">Please connect the device</string>
 	<string name="NAL_cmd_automode">Command line timing sending(200ms)</string>
 	<string name="NAL_cmd_pressmode">Exit the timing sending</string>
+	<string name="NAL_share_title">Saved successfully, share file?</string>
+	<string name="NAL_savedialog_tittle">Please enter a file name</string>
 	<string name="NAL_rule_number">0123456789</string>
 	<string name="NAL_rule_hexval">0123456789ABCDEF</string>
 	<string name="NAL_rul_ip">.0123456789</string>

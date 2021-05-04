@@ -1,7 +1,19 @@
 package com.wiyixiao.lzone.bean;
 
+import android.content.ContentValues;
+
 public class KeyInfoBean {
 
+    public static final String _IP      = "ip";
+    public static final String _NAME    = "name";
+    public static final String _CLICK   = "click_txt";
+    public static final String _LCLICK  = "lclick_txt";
+    public static final String _RELEASE = "release_txt";
+    public static final String _TYPE    = "type";
+    public static final String _TIME    = "time";
+    public static final String _IDX     = "idx";
+
+    private String ip;
     private String name;
     private String txt_click;
     private String txt_lclick;
@@ -120,5 +132,27 @@ public class KeyInfoBean {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getIp() {
+        return ip == null ? "" : ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public ContentValues toContentValues(){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(_IP, ip);
+        contentValues.put(_NAME, name);
+        contentValues.put(_CLICK, txt_click);
+        contentValues.put(_LCLICK, txt_lclick);
+        contentValues.put(_RELEASE, txt_release);
+        contentValues.put(_TYPE, type);
+        contentValues.put(_TIME, time);
+        contentValues.put(_IDX, index);
+
+        return contentValues;
     }
 }
