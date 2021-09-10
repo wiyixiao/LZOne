@@ -1,10 +1,15 @@
 package com.wiyixiao.lzone.net;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,16 +26,19 @@ import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IClientListener;
 import com.wiyixiao.lzone.utils.DataTransform;
+import com.wiyixiao.lzone.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * Author:Think
@@ -63,21 +71,34 @@ public class LzoneClient {
 
     private ConnDialog mConnDialog;
 
+    private boolean heartBeatFlag = false;
+    private boolean connSuccess = false;
+
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
 
             switch (msg.what){
                 case Constants.NET_CONN_SUCCESS:
+                    connSuccess = true;
                     iClientListener.connSuccess();
                     runReceiveTask();
+                    setHeatBeat(myApplication.cfg.sv_heat_beat_state);
                     break;
                 case Constants.NET_CONN_FAILED:
                     iClientListener.connFailed();
+                    //成功连接过，异常断开，尝试重新连接
+                    if(connSuccess){
+                        connect(mIp, mPort, mConnType);
+                    }
                     break;
                 case Constants.NET_DATA_REV:
                     Bundle b = (Bundle) msg.obj;
                     iClientListener.revCall(b.getByteArray("rev"));
+                    break;
+                case Constants.NET_CONN_LOST:
+                    iClientListener.disConn(msg.arg1);
+                    System.out.println("Lzone client close!");
                     break;
                 default:
                     break;
@@ -101,15 +122,21 @@ public class LzoneClient {
     }
 
     public boolean isConn(){
+        boolean conn = false;
+
         if(mSocket != null){
-            return mSocket.isConnected();
+            conn = !mSocket.isClosed() && mSocket.isConnected() && !mSocket.isInputShutdown();
         }
 
-        if(mDSocket != null){
-            return mDSocket.isBound();
-        }
+        return conn;
+    }
 
-        return false;
+    public boolean isHeartBeatFlag() {
+        return heartBeatFlag;
+    }
+
+    public boolean isConnSuccess() {
+        return connSuccess;
     }
 
     /***********************************Public***********************************/
@@ -149,8 +176,10 @@ public class LzoneClient {
                 }catch (Exception e){
                     mSocket = null;
                     mDSocket = null;
-                    e.printStackTrace();
+                    Log.e(myApplication.getTAG(), "Connect failed!");
 
+                    long t = Utils.getCurrTimeMillis();
+                    while (Utils.getCurrTimeMillis() - t < 5000){};
                     Message msg = handler.obtainMessage();
                     msg.what = Constants.NET_CONN_FAILED;
                     msg.sendToTarget();
@@ -192,12 +221,27 @@ public class LzoneClient {
             mDPacketRev = null;
             mDSocket = null;
 
-            iClientListener.disConn();
-            System.out.println("Lzone client close!");
+            heartBeatFlag = false;
 
-            if(exit){}
+            Message msg = handler.obtainMessage();
+            msg.what = Constants.NET_CONN_LOST;
+            //0: 手动关闭 ; 1: 自动关闭(需重新连接)
+            msg.arg1 = exit ? 0 : 1;
+            msg.sendToTarget();
+
+            if(exit){
+                connSuccess = false;
+            }
         }
 
+    }
+
+    public void setHeatBeat(boolean state){
+        heartBeatFlag = state;
+
+        if(state){
+            heartBeatTask();
+        }
     }
 
     public void writeStr(String str, int endType){
@@ -237,7 +281,7 @@ public class LzoneClient {
     }
 
     /***********************************Private**********************************/
-    private void write(byte[] bytes){
+    private void write(byte[] bytes) throws Exception{
         PriorityRunnable sendRunnable = new PriorityRunnable(PriorityType.HIGH, new Runnable() {
             @Override
             public void run() {
@@ -347,6 +391,7 @@ public class LzoneClient {
                 try{
                     while (isConn()){
                         byte[] data = null;
+                        byte[] mbyte = new byte[1];
 
                         if(mConnType == Vars.ConnType.TCP){
                             data = readBuffer();
@@ -380,6 +425,37 @@ public class LzoneClient {
         LocalThreadPools.getInstance().getExecutorService().execute(revRunnable);
     }
 
+    private void heartBeatTask(){
+        System.out.println("heartBeatThread task create!");
+        PriorityRunnable heartBeatRunnable = new PriorityRunnable(PriorityType.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                long heartBeatTime = Utils.getCurrTimeMillis();
+                while (heartBeatFlag && isConn()){
+                    try{
+                        if(Utils.getCurrTimeMillis() - heartBeatTime >= (myApplication.cfg.sv_heart_beat_time * 1000)){
+                            byte[] heartBeatData = DataTransform.hexTobytes(myApplication.cfg.sv_heart_beat_data);
+                            if(heartBeatData == null){
+                                heartBeatData = new byte[2];
+                            }
+                            mOs.write(heartBeatData, 0, heartBeatData.length);
+                            mOs.flush();
+                            heartBeatTime = Utils.getCurrTimeMillis();
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        close(false);
+                        break;
+                    }
+                }
+                System.out.println("heartBeatThread Exit!");
+
+            }
+        });
+
+        LocalThreadPools.getInstance().getExecutorService().execute(heartBeatRunnable);
+    }
+
     /**
      * 读取输入流
      * @return 字节数组
@@ -396,6 +472,7 @@ public class LzoneClient {
         if(count > 0){
             buf = new byte[count];
             int len = mIs.read(buf);
+            System.out.println(Arrays.toString(buf));
         }
 
         return buf;
@@ -471,6 +548,5 @@ public class LzoneClient {
 
 
     }
-
 
 }

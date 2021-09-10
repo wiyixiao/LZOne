@@ -134,6 +134,59 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:padding="@dimen/dp_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <CheckBox
+                android:id="@+id/cb_heartbeat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dp_5"
+                android:text="@string/NAL_setting_heartbeat"/>
+
+            <EditText
+                android:id="@+id/edit_heartbeat_data"
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="Data"
+                android:lines="1"
+                android:singleLine="true"
+                android:maxLength="32"
+                android:digits="@string/NAL_rule_hexval"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/dp_5"
+                android:text="(HEX)"
+                android:textColor="@color/colorBlack333333"
+                android:gravity="center"/>
+
+            <EditText
+                android:id="@+id/edit_heartbeat_time"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="Time"
+                android:lines="1"
+                android:singleLine="true"
+                android:maxLength="4"
+                android:inputType="numberSigned" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="(s)"
+                android:textColor="@color/colorBlack333333"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

@@ -20,7 +20,7 @@ public interface IClientListener {
     /**
      * @Desc: 连接断开
      */
-    void disConn();
+    void disConn(int arg);
 
     /**
      * 接收数据监听

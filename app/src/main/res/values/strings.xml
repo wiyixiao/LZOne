@@ -46,6 +46,7 @@
     <string name="NAL_setting_end_rn">char(\'\r\\n\')</string>
     <string name="NAL_setting_end_n">char(\'\\n\')</string>
     <string name="NAL_setting_end_other">Other</string>
+    <string name="NAL_setting_heartbeat">心跳包</string>
 
     <string name="NAL_key_init">恢复默认</string>
     <string name="NAL_key_name">按键名:&#160;</string>

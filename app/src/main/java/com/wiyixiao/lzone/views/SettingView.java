@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
@@ -15,10 +16,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
-import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.R;
+import com.wiyixiao.lzone.activity.MyApplication;
 import com.wiyixiao.lzone.bean.DeviceInfoBean;
 import com.wiyixiao.lzone.data.Vars;
+import com.wiyixiao.lzone.interfaces.ISettingListener;
 import com.wiyixiao.lzone.utils.DataTransform;
 
 import butterknife.BindView;
@@ -59,6 +61,12 @@ public class SettingView {
     EditText editHexRn;
     @BindView(R.id.cbrev_show_time)
     CheckBox cbrevShowTime;
+    @BindView(R.id.cb_heartbeat)
+    CheckBox cbHeartbeat;
+    @BindView(R.id.edit_heartbeat_data)
+    EditText editHeartbeatData;
+    @BindView(R.id.edit_heartbeat_time)
+    EditText editHeartbeatTime;
     private View mView;
     private Context mContext;
     private Dialog mDialog;
@@ -70,6 +78,8 @@ public class SettingView {
     private Unbinder unbinder;
 
     private DeviceInfoBean deviceBean;
+
+    private ISettingListener settingListener;
 
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
@@ -135,7 +145,7 @@ public class SettingView {
     }
 
     /************************************Click************************************/
-    @OnClick({R.id.rn_rbtn, R.id.n_rbtn, R.id.not_rn_rbtn})
+    @OnClick({R.id.rn_rbtn, R.id.n_rbtn, R.id.not_rn_rbtn, R.id.cb_heartbeat})
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -147,6 +157,9 @@ public class SettingView {
                 break;
             case R.id.not_rn_rbtn:
                 editHexRn.setText(myApplication.cfg.sv_stop_char_val);
+                break;
+            case R.id.cb_heartbeat:
+                settingListener.heartBeatCall(cbHeartbeat.isChecked());
                 break;
             default:
                 break;
@@ -170,7 +183,7 @@ public class SettingView {
         });
 
         editHexRn.addTextChangedListener(textWatcher);
-
+        settingListener = (ISettingListener) mContext;
     }
 
     private void initDisplay() {
@@ -191,6 +204,7 @@ public class SettingView {
             cbShowSend.setChecked(myApplication.cfg.sv_display_send);
             cbShowTime.setChecked(myApplication.cfg.sv_display_time);
             cbrevShowTime.setChecked(myApplication.cfg.sv_display_rev_time);
+            cbHeartbeat.setChecked(myApplication.cfg.sv_heat_beat_state);
 
             if (myApplication.cfg.sv_display_type == 0) {
                 asciiRbtn.setChecked(true);
@@ -213,6 +227,8 @@ public class SettingView {
             }
 
             editHexRn.setText(myApplication.cfg.sv_stop_char_val);
+            editHeartbeatData.setText(myApplication.cfg.sv_heart_beat_data);
+            editHeartbeatTime.setText(String.valueOf(myApplication.cfg.sv_heart_beat_time));
         }
 
     }
@@ -232,6 +248,14 @@ public class SettingView {
         //检测终止符是否为偶数，不是偶数去除最后一位
         final String str = editHexRn.getText().toString();
         myApplication.cfg.sv_stop_char_val = DataTransform.checkHexLength(str);
+
+        //心跳配置
+        myApplication.cfg.sv_heat_beat_state = cbHeartbeat.isChecked();
+
+        final String heartBeatVal = editHeartbeatData.getText().toString();
+        myApplication.cfg.sv_heart_beat_data = DataTransform.checkHexLength(heartBeatVal);
+        final String heartBeatT = editHeartbeatTime.getText().toString();
+        myApplication.cfg.sv_heart_beat_time = TextUtils.isEmpty(heartBeatT) ? 5 : Integer.parseInt(heartBeatT);
 
         myApplication.cfg.cfgWrite();
     }

@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lzone.iml" filepath="$PROJECT_DIR$/.idea/modules/lzone.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Share2Lib/lzone.Share2Lib.iml" filepath="$PROJECT_DIR$/.idea/modules/Share2Lib/lzone.Share2Lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ZipLib/lzone.ZipLib.iml" filepath="$PROJECT_DIR$/.idea/modules/ZipLib/lzone.ZipLib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/lzone.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/lzone.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Share2Lib/Share2Lib.iml" filepath="$PROJECT_DIR$/.idea/modules/Share2Lib/Share2Lib.iml" group="lzone/Share2Lib" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ZipLib/ZipLib.iml" filepath="$PROJECT_DIR$/.idea/modules/ZipLib/ZipLib.iml" group="lzone/ZipLib" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="lzone/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lzone.iml" filepath="$PROJECT_DIR$/.idea/modules/lzone.iml" group="lzone" />
     </modules>
   </component>
 </project>

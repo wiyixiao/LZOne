@@ -35,6 +35,9 @@ public class CfgDataManager {
     private static final String SK_SEND_TYPE        = "send_type";
     private static final String SK_STOP_CHAR_TYPE   = "stop_char_type";
     private static final String SK_STOP_CHAR_VAL    = "stop_char_val";
+    private static final String SK_HEARTBEAT_STATE  = "heart_beat_state";
+    private static final String SK_HEARTBEAT_DATA   = "heart_beat_data";
+    private static final String SK_HEARTBEAT_TIME   = "heart_beat_time";
 
     //SPITEM_VAL
     public String sv_app_author         = "wiyixiao";
@@ -48,6 +51,9 @@ public class CfgDataManager {
     public int sv_send_type             = 0;
     public int sv_stop_char_type        = 0;
     public String sv_stop_char_val      = "0D 0A";
+    public boolean sv_heat_beat_state   = false;
+    public String sv_heart_beat_data    = "55AA";
+    public int sv_heart_beat_time       = 10;
 
 
     private SPHelper spHelper;
@@ -90,6 +96,12 @@ public class CfgDataManager {
         sv_stop_char_type = (int)spHelper.get(SK_STOP_CHAR_TYPE, VALUE_DEFAULT_INT);
         //终止符十六进制字符串
         sv_stop_char_val = (String)spHelper.get(SK_STOP_CHAR_VAL, VALUE_DEFAULT_STRING);
+        //心跳包启用
+        sv_heat_beat_state = (boolean)spHelper.get(SK_HEARTBEAT_STATE, VALUE_DEFAULT_BOOLEAN);
+        //心跳包内容
+        sv_heart_beat_data = (String)spHelper.get(SK_HEARTBEAT_DATA, VALUE_DEFAULT_STRING);
+        //心跳包间隔时间
+        sv_heart_beat_time = (int)spHelper.get(SK_HEARTBEAT_TIME, VALUE_DEFAULT_INT);
 
     }
 
@@ -123,6 +135,9 @@ public class CfgDataManager {
         builder.append(SK_SEND_TYPE).append(": ").append(sv_send_type).append("\n");
         builder.append(SK_STOP_CHAR_TYPE).append(": ").append(sv_stop_char_type).append("\n");
         builder.append(SK_STOP_CHAR_VAL).append(": ").append(sv_stop_char_val).append("\n");
+        builder.append(SK_HEARTBEAT_STATE).append(": ").append(sv_heat_beat_state).append("\n");
+        builder.append(SK_HEARTBEAT_DATA).append(": ").append(sv_heart_beat_data).append("\n");
+        builder.append(SK_HEARTBEAT_TIME).append(": ").append(sv_heart_beat_time).append("\n");
         builder.append("**********Lzone Config**********").append("\n");
 
         System.out.println(builder.toString());
@@ -146,6 +161,9 @@ public class CfgDataManager {
         items.add(new SPHelper.SpItem(SK_SEND_TYPE, sv_send_type));
         items.add(new SPHelper.SpItem(SK_STOP_CHAR_TYPE, sv_stop_char_type));
         items.add(new SPHelper.SpItem(SK_STOP_CHAR_VAL, sv_stop_char_val));
+        items.add(new SPHelper.SpItem(SK_HEARTBEAT_STATE, sv_heat_beat_state));
+        items.add(new SPHelper.SpItem(SK_HEARTBEAT_DATA, sv_heart_beat_data));
+        items.add(new SPHelper.SpItem(SK_HEARTBEAT_TIME, sv_heart_beat_time));
     }
 
 }

@@ -39,6 +39,7 @@ import com.wiyixiao.lzone.data.Constants;
 import com.wiyixiao.lzone.data.Vars;
 import com.wiyixiao.lzone.interfaces.IClientListener;
 import com.wiyixiao.lzone.interfaces.IKeyPadListener;
+import com.wiyixiao.lzone.interfaces.ISettingListener;
 import com.wiyixiao.lzone.net.LzoneClient;
 import com.wiyixiao.lzone.utils.DataTransform;
 import com.wiyixiao.lzone.utils.DisplayUtil;
@@ -56,7 +57,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class ControlActivity extends AppCompatActivity {
+public class ControlActivity extends AppCompatActivity implements ISettingListener {
 
     @BindView(R.id.keypad_view)
     KeyPadView keyPadView;
@@ -177,13 +178,27 @@ public class ControlActivity extends AppCompatActivity {
 
         @Override
         public void connNo() {
-            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_no));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_no));
+                }
+            });
         }
 
         @Override
-        public void disConn() {
-            DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_discon));
-            connItem.setTitle(getResources().getString(R.string.NAL_menu_connect));
+        public void disConn(int arg) {
+            System.out.println(arg);
+            if(arg == 0){
+                DisplayUtil.showMsg(mContext, getResources().getString(R.string.NAL_conn_discon));
+                connItem.setTitle(getResources().getString(R.string.NAL_menu_connect));
+            }else if(arg == 1){
+                if(!lzoneClient.isConn()){
+                    lzoneClient.connect(deviceInfoBean.getDevice_ip(),
+                            deviceInfoBean.getDevice_port(),
+                            deviceInfoBean.getDevice_type());
+                }
+            }
         }
 
         @Override
@@ -305,12 +320,12 @@ public class ControlActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id){
             case R.id.item_connect:
-                if(!lzoneClient.isConn()){
+                if(!lzoneClient.isConnSuccess()){
                     lzoneClient.connect(deviceInfoBean.getDevice_ip(),
                                         deviceInfoBean.getDevice_port(),
                                         deviceInfoBean.getDevice_type());
                 }else{
-                    lzoneClient.close(false);
+                    lzoneClient.close(true);
                 }
                 break;
             case android.R.id.home:
@@ -570,4 +585,11 @@ public class ControlActivity extends AppCompatActivity {
 
     }
 
+    /********************************Setting Listener************************************/
+    @Override
+    public void heartBeatCall(boolean state) {
+        if(lzoneClient != null){
+            lzoneClient.setHeatBeat(state);
+        }
+    }
 }
